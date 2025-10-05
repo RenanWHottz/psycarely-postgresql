@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Django
+*.log
+*.pot
+*.pyc
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+# Se você estiver coletando arquivos estáticos
+static/
+
+# Configurações locais
+*.env
+*.local
+settings.py
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Banco de dados
+*.db

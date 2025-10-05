@@ -1,0 +1,19 @@
+<h2>Cadastro</h2>
+<form method="POST">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  {% for field in form %}
+    <p>
+      {{ field.label_tag }}<br>
+      {{ field }}
+      {% if field.help_text %}
+        <small>{{ field.help_text }}</small>
+      {% endif %}
+      {% for error in field.errors %}
+        <strong style="color:red">{{ error }}</strong>
+      {% endfor %}
+    </p>
+  {% endfor %}
+  <button type="submit">Cadastrar</button>
+</form>
+<a href="{% url 'login' %}">Voltar para Login</a>

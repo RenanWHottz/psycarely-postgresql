@@ -1,0 +1,20 @@
+Acesso do Profissional
+- Opção de "Pacientes", onde irá listar todos os pacientes disponíveis. Ao acessar um perfil de paciente:
+    * Terá acesso as seus dados (nome, telefone e etc) e sua anamnese (editavel).
+    * Poderá acessar as anotações de cada paciente (anotação geral e de sessão), todas com mecanismo de busca.
+    * Terá acesso as tarefas, como os RPD do paciente e seu Registro de Humor.
+        - Aqui o Profissional poderá colocar a quantidade de vezes por dia de lembrete de RPD e RDH para o paciente.
+    * Próximas consultas marcadas (editavel também).
+
+- Opção de consultas
+    * Mostra todas as próximas consultas marcadas, sendo editável. 
+    PENSAR MELHOR EM COMO FAZER A GESTÃO DE CONSULTAS - talvez algo como um dia da semana e horário fixo por paciente. (opção de adicionar dia e horario)
+
+Acesso do Paciente
+- Consultas (lista todas as consultas marcadas)
+- Registro de Humor (um botão bem posicionado)
+    * Irá abrir um pequeno form com emojis e escrito as emoções para ele escolher a que está sentindo
+- Tarefas (levará para a sessão de tarefas de casa)
+    * Listará os RPD já realizados e terá a opção de "Fazer RPD", onde abrirá um form para ele preencher o novo RPD
+    * Mostrará seus Registro de Humor também (vou pensar futuramente em como apresentar - ??talvez um calendário com os emojis por dia??).
+
