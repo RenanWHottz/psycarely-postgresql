@@ -1,6 +1,8 @@
 # apps/usuarios/views.py
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from .forms import LoginForm, CadastroForm
 
 def login_view(request):
@@ -30,3 +32,13 @@ def cadastro_view(request):
     else:
         form = CadastroForm()
     return render(request, 'usuarios/cadastro.html', {'form': form})
+
+@login_required
+def dashboard_profissional(request):
+    # Aqui você futuramente chamará os pacientes, consultas, tarefas
+    return render(request, 'usuarios/dashboard_profissional.html')
+
+@login_required
+def dashboard_paciente(request):
+    # Aqui você futuramente chamará consultas, RPD, registro de humor
+    return render(request, 'usuarios/dashboard_paciente.html')
