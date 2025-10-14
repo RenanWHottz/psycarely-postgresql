@@ -8,4 +8,6 @@ urlpatterns = [
     path('enviar-solicitacao/', views.enviar_solicitacao, name='enviar_solicitacao'),
     path('solicitacoes/', views.lista_solicitacoes, name='lista_solicitacoes'),
     path('solicitacoes/<int:solicitacao_id>/aprovar/', views.aprovar_solicitacao, name='aprovar_solicitacao'),
+    path('solicitacoes/<int:solicitacao_id>/excluir/', views.excluir_solicitacao, name='excluir_solicitacao'),
+    path('desconectar/', views.desconectar_profissional, name='desconectar_profissional'),
 ]

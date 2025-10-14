@@ -45,7 +45,6 @@ def enviar_solicitacao(request):
             messages.error(request, "Paciente não encontrado")
             return redirect('dashboard_profissional')
 
-        # Verifica se já existe solicitação
         solicitacao, created = SolicitacaoConexao.objects.get_or_create(
             paciente=paciente_usuario,
             profissional=request.user
@@ -68,14 +67,42 @@ def lista_solicitacoes(request):
 @paciente_required
 def aprovar_solicitacao(request, solicitacao_id):
     solicitacao = get_object_or_404(SolicitacaoConexao, id=solicitacao_id, paciente=request.user)
-    solicitacao.aprovado = True
-    solicitacao.save()
 
-    # Cria ou atualiza o vínculo
+    vinculo_existente = getattr(request.user, 'vinculo', None)
+    if vinculo_existente and vinculo_existente.ativo:
+        #criar AVISO com bootstrap 
+        #messages.warning(request, "Você já possui um profissional conectado. Desconecte-se antes de aprovar outra solicitação.")
+        return redirect('lista_solicitacoes')
+
     Vinculo.objects.update_or_create(
         paciente=request.user,
         defaults={'profissional': solicitacao.profissional, 'ativo': True}
     )
 
+    solicitacao.delete()
+
     messages.success(request, f"Profissional {solicitacao.profissional.get_full_name()} aprovado com sucesso!")
     return redirect('lista_solicitacoes')
+
+
+
+@login_required
+@paciente_required
+def excluir_solicitacao(request, solicitacao_id):
+    solicitacao = get_object_or_404(SolicitacaoConexao, id=solicitacao_id, paciente=request.user, aprovado=False)
+    solicitacao.delete()
+    messages.success(request, "Solicitação excluída com sucesso.")
+    return redirect('lista_solicitacoes')
+
+
+@login_required
+@paciente_required
+def desconectar_profissional(request):
+    vinculo = getattr(request.user, 'vinculo', None)
+    if vinculo and vinculo.ativo:
+        vinculo.ativo = False
+        vinculo.save()
+        messages.success(request, f"Você se desconectou de {vinculo.profissional.get_full_name()}.")
+    else:
+        messages.warning(request, "Nenhum profissional conectado para desconectar.")
+    return redirect('dashboard_paciente')

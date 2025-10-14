@@ -1,4 +1,5 @@
 <!--templates/pacientes/lista_pacientes.html-->
+<a href="{% url 'dashboard_profissional' %}">← Voltar</a>
 <h2>Pacientes do Profissional {{ request.user.first_name }}</h2>
 
 {% if pacientes %}

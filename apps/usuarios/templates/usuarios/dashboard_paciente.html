@@ -14,9 +14,12 @@
 <p>RPDs já feitos e opção de criar novos.</p>
 
 <h2>Profissional Conectado</h2>
-<h2>Profissional Conectado</h2>
 {% if request.user.vinculo and request.user.vinculo.ativo %}
     <p>{{ request.user.vinculo.profissional.get_full_name }} (CRP: {{ request.user.vinculo.profissional.crp }})</p>
+    <form action="{% url 'desconectar_profissional' %}" method="post" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" onclick="return confirm('Tem certeza que deseja se desconectar do profissional?')">Desconectar</button>
+    </form>
 {% else %}
     <p>Nenhum profissional conectado ainda.</p>
 {% endif %}

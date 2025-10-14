@@ -1,4 +1,3 @@
-<!-- templates/pacientes/lista_solicitacoes.html -->
 <h2>Solicitações de conexão</h2>
 
 {% if solicitacoes %}
@@ -6,7 +5,8 @@
   {% for s in solicitacoes %}
     <li>
       {{ s.profissional.get_full_name }} (CRP: {{ s.profissional.crp }})
-      <a href="{% url 'aprovar_solicitacao' s.id %}">Aprovar</a>
+      <a href="{% url 'aprovar_solicitacao' s.id %}">Aprovar</a> |
+      <a href="{% url 'excluir_solicitacao' s.id %}" onclick="return confirm('Tem certeza que deseja excluir esta solicitação?')">Excluir</a>
     </li>
   {% endfor %}
   </ul>
