@@ -1,9 +1,13 @@
+<!--/templates/usuarios/dashboard_profissional.html-->
 <h1>Bem-vindo, {{ request.user.first_name }}</h1>
+<a href="{% url 'logout' %}" class="btn btn-danger">Sair</a>
+<hr>
 
 <h3>MENU para LISTAS</h3>
 
 <h2>Pacientes</h2>
-<p>Aqui futuramente será listados os pacientes.</p>
+<p><a href="{% url 'lista_pacientes' %}">Ver lista de pacientes</a></p>
+<p><a href="{% url 'enviar_solicitacao' %}">Adicionar paciente (Enviar solicitação)</a></p>
 
 <h2>Próximas Consultas</h2>
 <p>Consultas do dia ou semana aparecerão aqui.</p>

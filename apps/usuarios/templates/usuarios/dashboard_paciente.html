@@ -1,4 +1,8 @@
+<!-- /templates/usuarios/dashboard_paciente.html -->
 <h1>Bem-vindo, {{ request.user.first_name }}</h1>
+<a href="{% url 'logout' %}" class="btn btn-danger">Sair</a>
+<hr>
+
 
 <h2>Consultas</h2>
 <p>Suas próximas consultas aparecerão aqui.</p>
@@ -8,3 +12,13 @@
 
 <h2>Tarefas de Casa</h2>
 <p>RPDs já feitos e opção de criar novos.</p>
+
+<h2>Profissional Conectado</h2>
+<h2>Profissional Conectado</h2>
+{% if request.user.vinculo and request.user.vinculo.ativo %}
+    <p>{{ request.user.vinculo.profissional.get_full_name }} (CRP: {{ request.user.vinculo.profissional.crp }})</p>
+{% else %}
+    <p>Nenhum profissional conectado ainda.</p>
+{% endif %}
+<p><a href="{% url 'lista_solicitacoes' %}">Ver solicitações de conexão</a></p>
+

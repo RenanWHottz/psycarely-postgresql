@@ -4,6 +4,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from .forms import LoginForm, CadastroForm
+from .decorators import profissional_required, paciente_required
+
 
 def login_view(request):
     if request.method == "POST":
@@ -34,11 +36,13 @@ def cadastro_view(request):
     return render(request, 'usuarios/cadastro.html', {'form': form})
 
 @login_required
+@profissional_required
 def dashboard_profissional(request):
-    # Aqui você futuramente chamará os pacientes, consultas, tarefas
+    #consultas, tarefas e notificações
     return render(request, 'usuarios/dashboard_profissional.html')
 
 @login_required
+@paciente_required
 def dashboard_paciente(request):
-    # Aqui você futuramente chamará consultas, RPD, registro de humor
+    #consultas, RPD, registro de humor
     return render(request, 'usuarios/dashboard_paciente.html')

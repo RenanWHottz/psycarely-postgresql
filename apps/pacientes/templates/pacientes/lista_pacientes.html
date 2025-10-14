@@ -1,0 +1,15 @@
+<!--templates/pacientes/lista_pacientes.html-->
+<h2>Pacientes do Profissional {{ request.user.first_name }}</h2>
+
+{% if pacientes %}
+    <ul>
+        {% for p in pacientes %}
+            <li>
+                {{ p.get_full_name }} — {{ p.email }}
+                <a href="{% url 'perfil_paciente' p.id %}">Ver perfil</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Você ainda não possui pacientes conectados.</p>
+{% endif %}

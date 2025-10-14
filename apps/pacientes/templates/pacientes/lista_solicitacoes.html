@@ -1,0 +1,17 @@
+<!-- templates/pacientes/lista_solicitacoes.html -->
+<h2>Solicitações de conexão</h2>
+
+{% if solicitacoes %}
+  <ul>
+  {% for s in solicitacoes %}
+    <li>
+      {{ s.profissional.get_full_name }} (CRP: {{ s.profissional.crp }})
+      <a href="{% url 'aprovar_solicitacao' s.id %}">Aprovar</a>
+    </li>
+  {% endfor %}
+  </ul>
+{% else %}
+  <p>Não há solicitações pendentes.</p>
+{% endif %}
+
+<a href="{% url 'dashboard_paciente' %}">← Voltar</a>

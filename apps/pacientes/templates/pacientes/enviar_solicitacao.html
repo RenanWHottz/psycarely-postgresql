@@ -1,0 +1,9 @@
+<!-- templates/pacientes/enviar_solicitacao.html -->
+<h2>Enviar solicitação para paciente</h2>
+<form method="POST">
+  {% csrf_token %}
+  <label>CPF do paciente:</label>
+  <input type="text" name="cpf" required>
+  <button type="submit">Enviar solicitação</button>
+</form>
+<a href="{% url 'dashboard_profissional' %}">← Voltar</a>
