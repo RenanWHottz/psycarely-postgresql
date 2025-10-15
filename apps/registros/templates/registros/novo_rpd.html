@@ -1,0 +1,55 @@
+<!--#registros/templates/registros/novo_rpd.html-->
+<h2>Novo Registro de Pensamento Disfuncional (RPD)</h2>
+<hr>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label for="id_data_acontecimento" class="form-label"><strong>Data/Hora do acontecimento (opcional)</strong></label>
+        {{ form.data_acontecimento }}
+    </div>
+
+    <div class="mb-3">
+        <label for="id_situacao" class="form-label"><strong>Situação</strong></label>
+        <p class="text-muted small">
+            Que situação real, fluxo de pensamentos ou recordações levaram à emoção desagradável?
+        </p>
+        {{ form.situacao }}
+    </div>
+
+    <div class="mb-3">
+        <label for="id_pensamentos_automaticos" class="form-label"><strong>Pensamentos Automáticos</strong></label>
+        <p class="text-muted small">
+            Quais foram os pensamentos automáticos que passaram pela sua cabeça?
+        </p>
+        {{ form.pensamentos_automaticos }}
+    </div>
+    <br>
+    <div class="mb-3">
+        <label for="id_emocao" class="form-label"><strong>Emoção</strong></label>
+        <p class="text-muted small">
+            Que emoção ou emoções você sentiu? Qual a intensidade dessa emoção (0 a 10)?
+        </p>
+        {{ form.emocao }}
+    </div>
+    <br>
+    <div class="mb-3">
+        <label for="id_conclusao" class="form-label"><strong>Conclusão</strong></label>
+        <p class="text-muted small">
+            Quais são suas respostas racionais aos pensamentos automáticos? Quanto você acredita em cada resposta (0 a 10)?
+        </p>
+        {{ form.conclusao }}
+    </div>
+    <br>
+    <div class="mb-3">
+        <label for="id_resultado" class="form-label"><strong>Resultado</strong></label>
+        <p class="text-muted small">
+            Quanto você acredita agora em cada pensamento automático (0 a 10)?
+        </p>
+        {{ form.resultado }}
+    </div>
+    <br>
+    <button type="submit" class="btn btn-success">Salvar Registro</button>
+    <a href="{% url 'tarefas_paciente' %}" class="btn btn-secondary">Cancelar</a>
+</form>

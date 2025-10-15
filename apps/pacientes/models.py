@@ -1,4 +1,4 @@
-# apps/pacientes/models.py
+#apps/pacientes/models.py
 from django.db import models
 from apps.usuarios.models import Usuario
 

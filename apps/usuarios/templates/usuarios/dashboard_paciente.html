@@ -12,7 +12,8 @@
 <button>Registrar Humor</button>
 
 <h2>Tarefas de Casa</h2>
-<p>RPDs já feitos e opção de criar novos.</p>
+<a href="{% url 'tarefas_paciente' %}" class="btn btn-secondary">Acessar Tarefas de Casa</a>
+
 
 <h2>Profissional Conectado</h2>
 {% if request.user.vinculo and request.user.vinculo.ativo %}
