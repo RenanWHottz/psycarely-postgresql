@@ -36,3 +36,67 @@ class CadastroForm(UserCreationForm):
             'password1': "Sua senha deve ter pelo menos 8 caracteres.",
             'password2': "Digite a mesma senha para confirmação."
         }
+
+class PerfilPacienteForm(forms.ModelForm):
+    class Meta:
+        model = Usuario
+        fields = [
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'telefone',
+            'data_nascimento',
+            'endereco'
+        ]
+        widgets = {
+            'data_nascimento': forms.DateInput(attrs={'type': 'date'}),
+        }
+        labels = {
+            'username': 'Nome de Usuário',
+            'first_name': 'Nome',
+            'last_name': 'Sobrenome',
+            'email': 'E-mail',
+            'telefone': 'Telefone',
+            'data_nascimento': 'Data de Nascimento',
+            'endereco': 'Endereço',
+        }
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if Usuario.objects.exclude(pk=self.instance.pk).filter(username=username).exists():
+            raise forms.ValidationError("Este nome de usuário já está em uso.")
+        return username
+
+class PerfilProfissionalForm(forms.ModelForm):
+    class Meta:
+        model = Usuario
+        fields = [
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'telefone',
+            'crp',
+            'data_nascimento',
+            'endereco'
+        ]
+        widgets = {
+            'data_nascimento': forms.DateInput(attrs={'type': 'date'}),
+        }
+        labels = {
+            'username': 'Nome de Usuário',
+            'first_name': 'Nome',
+            'last_name': 'Sobrenome',
+            'email': 'E-mail',
+            'telefone': 'Telefone',
+            'crp': 'CRP',
+            'data_nascimento': 'Data de Nascimento',
+            'endereco': 'Endereço',
+        }
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if Usuario.objects.exclude(pk=self.instance.pk).filter(username=username).exists():
+            raise forms.ValidationError("Este nome de usuário já está em uso.")
+        return username

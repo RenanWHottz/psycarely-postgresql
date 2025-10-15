@@ -2,8 +2,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.http import HttpResponse
-from .forms import LoginForm, CadastroForm
+from .forms import LoginForm, CadastroForm, PerfilPacienteForm, PerfilProfissionalForm
 from .decorators import profissional_required, paciente_required
 
 
@@ -46,3 +47,35 @@ def dashboard_profissional(request):
 def dashboard_paciente(request):
     #consultas, RPD, registro de humor
     return render(request, 'usuarios/dashboard_paciente.html')
+
+@login_required
+@paciente_required
+def perfil_paciente_view(request):
+    user = request.user
+
+    if request.method == 'POST':
+        form = PerfilPacienteForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Perfil atualizado com sucesso!')
+            return redirect('perfil_paciente_usuario')
+    else:
+        form = PerfilPacienteForm(instance=user)
+
+    return render(request, 'usuarios/perfil_paciente_usuario.html', {'form': form})
+
+@login_required
+@profissional_required
+def perfil_profissional_view(request):
+    user = request.user
+
+    if request.method == 'POST':
+        form = PerfilProfissionalForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Perfil atualizado com sucesso!')
+            return redirect('perfil_profissional_usuario')
+    else:
+        form = PerfilProfissionalForm(instance=user)
+
+    return render(request, 'usuarios/perfil_profissional_usuario.html', {'form': form})

@@ -1,6 +1,7 @@
 <!-- /templates/usuarios/dashboard_paciente.html -->
 <h1>Bem-vindo, {{ request.user.first_name }}</h1>
 <a href="{% url 'logout' %}" class="btn btn-danger">Sair</a>
+<a href="{% url 'perfil_paciente_usuario' %}" class="btn btn-primary">Meu Perfil</a>
 <hr>
 
 

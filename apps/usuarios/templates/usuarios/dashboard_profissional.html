@@ -1,6 +1,7 @@
 <!--/templates/usuarios/dashboard_profissional.html-->
 <h1>Bem-vindo, {{ request.user.first_name }}</h1>
 <a href="{% url 'logout' %}" class="btn btn-danger">Sair</a>
+<p><a href="{% url 'perfil_profissional_usuario' %}">Meu perfil</a></p>
 <hr>
 
 <h3>MENU para LISTAS</h3>

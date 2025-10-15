@@ -1,4 +1,3 @@
-# apps/usuarios/models.py
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -10,6 +9,8 @@ class Usuario(AbstractUser):
     telefone = models.CharField(max_length=20, blank=True)
     cpf = models.CharField(max_length=14, unique=True, null=True, blank=True)
     crp = models.CharField(max_length=7, blank=True, null=True)
+    data_nascimento = models.DateField(null=True, blank=True)
+    endereco = models.CharField(max_length=255, blank=True)
 
     def is_profissional(self):
         return self.tipo == 'profissional'
