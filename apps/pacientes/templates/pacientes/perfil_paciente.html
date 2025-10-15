@@ -1,13 +1,20 @@
 <!--templates/pacientes/perfil_paciente.html-->
-<h2>Perfil de {{ paciente.usuario.get_full_name }}</h2>
+<a href="{% url 'lista_pacientes' %}">← Voltar para lista</a>
 
-<p><strong>CPF:</strong> {{ paciente.usuario.cpf }}</p>
-<p><strong>Email:</strong> {{ paciente.usuario.email }}</p>
-<p><strong>Telefone:</strong> {{ paciente.usuario.telefone }}</p>
+<h2>Perfil de {{ paciente.get_full_name }}</h2>
+
+<p><strong>CPF:</strong> {{ paciente.cpf }}</p>
+<p><strong>Email:</strong> {{ paciente.email }}</p>
+<p><strong>Telefone:</strong> {{ paciente.telefone }}</p>
 <p><strong>Data de nascimento:</strong> {{ paciente.data_nascimento|default:"Não informado" }}</p>
 <p><strong>Endereço:</strong> {{ paciente.endereco|default:"Não informado" }}</p>
 
 <h3>Anamnese</h3>
-<p>{{ paciente.anamnese|default:"Ainda não preenchida." }}</p>
+{% if anamnese and anamnese.conteudo %}
+    <p>{{ anamnese.conteudo|linebreaks }}</p>
+{% else %}
+    <p>Ainda não preenchida.</p>
+{% endif %}
+<a href="{% url 'editar_anamnese' paciente.id %}" class="btn btn-primary mt-2">Editar Anamnese</a>
 
-<a href="{% url 'lista_pacientes' %}">← Voltar para lista</a>
+<h3>Adicionar aqui opção de ver tarefas de casa</h3>

@@ -1,0 +1,7 @@
+<h2>Anamnese de {{ paciente.get_full_name }}</h2>
+<form method="post">
+    {% csrf_token %}
+    <textarea name="conteudo" rows="12" class="form-control">{{ anamnese.conteudo }}</textarea>
+    <button type="submit" class="btn btn-success mt-3">Salvar</button>
+    <a href="{% url 'perfil_paciente' paciente.id %}" class="btn btn-secondary mt-3">Cancelar</a>
+</form>

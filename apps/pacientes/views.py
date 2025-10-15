@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from apps.usuarios.models import Usuario
-from .models import Vinculo, SolicitacaoConexao
+from .models import Vinculo, SolicitacaoConexao, Anamnese
 from apps.usuarios.decorators import profissional_required, paciente_required
 
 
@@ -32,7 +32,14 @@ def perfil_paciente(request, paciente_id):
     )
 
     paciente = vinculo.paciente
-    return render(request, 'pacientes/perfil_paciente.html', {'paciente': paciente})
+    anamnese = getattr(vinculo, 'anamnese', None)
+
+    context = {
+        'paciente': paciente,
+        'vinculo': vinculo,
+        'anamnese': anamnese,
+    }
+    return render(request, 'pacientes/perfil_paciente.html', context)
 
 @login_required
 @profissional_required
@@ -84,8 +91,6 @@ def aprovar_solicitacao(request, solicitacao_id):
     messages.success(request, f"Profissional {solicitacao.profissional.get_full_name()} aprovado com sucesso!")
     return redirect('lista_solicitacoes')
 
-
-
 @login_required
 @paciente_required
 def excluir_solicitacao(request, solicitacao_id):
@@ -93,7 +98,6 @@ def excluir_solicitacao(request, solicitacao_id):
     solicitacao.delete()
     messages.success(request, "Solicitação excluída com sucesso.")
     return redirect('lista_solicitacoes')
-
 
 @login_required
 @paciente_required
@@ -106,3 +110,27 @@ def desconectar_profissional(request):
     else:
         messages.warning(request, "Nenhum profissional conectado para desconectar.")
     return redirect('dashboard_paciente')
+
+@login_required
+@profissional_required
+def editar_anamnese(request, paciente_id):
+    vinculo = get_object_or_404(
+        Vinculo,
+        paciente__id=paciente_id,
+        profissional=request.user,
+        ativo=True
+    )
+
+    anamnese, _ = Anamnese.objects.get_or_create(vinculo=vinculo)
+
+    if request.method == 'POST':
+        conteudo = request.POST.get('conteudo')
+        anamnese.conteudo = conteudo
+        anamnese.save()
+        messages.success(request, "Anamnese atualizada com sucesso.")
+        return redirect('perfil_paciente', paciente_id=paciente_id)
+
+    return render(request, 'pacientes/editar_anamnese.html', {
+        'paciente': vinculo.paciente,
+        'anamnese': anamnese,
+    })
