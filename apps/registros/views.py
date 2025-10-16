@@ -2,8 +2,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from apps.usuarios.decorators import profissional_required, paciente_required
 from django.contrib.auth.decorators import login_required
-from .models import RPD
-from .forms import RPDForm
+from .models import RPD, RegistroHumor
+from .forms import RPDForm, RegistroHumorForm
+from django.utils import timezone
+
 
 @login_required
 @paciente_required
@@ -83,3 +85,24 @@ def detalhar_rpd_profissional(request, rpd_id):
         return redirect('lista_pacientes')
 
     return render(request, 'registros/detalhar_rpd_profissional.html', {'rpd': rpd})
+
+@login_required
+@paciente_required
+def registrar_humor(request):
+    if request.method == 'POST':
+        form = RegistroHumorForm(request.POST)
+        if form.is_valid():
+            humor = form.save(commit=False)
+            humor.paciente = request.user
+            humor.save()
+            return redirect('tarefas_paciente')
+    else:
+        form = RegistroHumorForm(initial={'data_humor': timezone.now()})
+    return render(request, 'registros/registrar_humor.html', {'form': form})
+
+
+@login_required
+@paciente_required
+def listar_humores(request):
+    humores = RegistroHumor.objects.filter(paciente=request.user).order_by('-data_humor')
+    return render(request, 'registros/listar_humores.html', {'humores': humores})

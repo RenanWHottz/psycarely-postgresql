@@ -1,5 +1,6 @@
 #apps/registros/models.py
 from django.db import models
+from django.utils import timezone
 from apps.usuarios.models import Usuario
 
 class RPD(models.Model):
@@ -28,3 +29,29 @@ class RPD(models.Model):
 
     def __str__(self):
         return f"RPD de {self.paciente.get_full_name()} ({self.data_criacao.strftime('%d/%m/%Y')})"
+
+class RegistroHumor(models.Model):
+    EMOCOES_CHOICES = [
+        ('feliz', '😄 Feliz'),
+        ('triste', '😢 Triste'),
+        ('ansioso', '😰 Ansioso(a)'),
+        ('tranquilo', '😌 Tranquilo(a)'),
+        ('irritado', '😠 Irritado(a)'),
+        ('desanimado', '😞 Desanimado(a)'),
+        ('esperancoso', '😊 Esperançoso(a)'),
+    ]
+
+    paciente = models.ForeignKey(
+        Usuario,
+        on_delete=models.CASCADE,
+        limit_choices_to={'tipo': 'paciente'},
+        related_name='registros_humor'
+    )
+    data_humor = models.DateTimeField(default=timezone.now)
+    emocao = models.CharField(max_length=20, choices=EMOCOES_CHOICES)
+
+    def __str__(self):
+        return f"{self.paciente.get_full_name()} - {self.get_emocao_display()} ({self.data_humor.strftime('%d/%m/%Y %H:%M')})"
+
+    class Meta:
+        ordering = ['-data_humor']
