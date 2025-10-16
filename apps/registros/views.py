@@ -106,3 +106,18 @@ def registrar_humor(request):
 def listar_humores(request):
     humores = RegistroHumor.objects.filter(paciente=request.user).order_by('-data_humor')
     return render(request, 'registros/listar_humores.html', {'humores': humores})
+
+@login_required
+@profissional_required
+def listar_humores_paciente(request, paciente_id):
+    from apps.pacientes.models import Vinculo
+    vinculo = get_object_or_404(Vinculo, paciente__id=paciente_id, profissional=request.user, ativo=True)
+    paciente = vinculo.paciente
+
+    humores = RegistroHumor.objects.filter(paciente=paciente).order_by('-data_humor')
+
+    context = {
+        'humores': humores,
+        'paciente': paciente,
+    }
+    return render(request, 'registros/listar_humores_profissional.html', context)

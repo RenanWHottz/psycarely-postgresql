@@ -1,3 +1,4 @@
+#apps/registros/urls.py
 from django.urls import path
 from . import views
 
@@ -12,4 +13,5 @@ urlpatterns = [
     path('profissional/rpd/<int:rpd_id>/', views.detalhar_rpd_profissional, name='detalhar_rpd_profissional'),
     path('humor/novo/', views.registrar_humor, name='registrar_humor'),
     path('humor/listar/', views.listar_humores, name='listar_humores'),
+    path('profissional/paciente/<int:paciente_id>/humores/', views.listar_humores_paciente, name='listar_humores_paciente'),
 ]
