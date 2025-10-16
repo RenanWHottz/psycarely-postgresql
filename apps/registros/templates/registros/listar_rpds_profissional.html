@@ -1,0 +1,65 @@
+<!--/templates/registro/listar_rpds_profissional.html-->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>RPDs de {{ paciente.get_full_name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light p-4">
+
+<div class="container">
+    <h1 class="mb-4 text-center">RPDs de {{ paciente.get_full_name }}</h1>
+
+    {% if rpds %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle">
+                <thead class="table-primary text-center">
+                    <tr>
+                        <th>Realizado em</th>
+                        <th>Data/Hora</th>
+                        <th>Situação</th>
+                        <th>Pensamentos Automáticos</th>
+                        <th>Emoções</th>
+                        <th>Conclusão</th>
+                        <th>Resultado</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rpd in rpds %}
+                        <tr>
+                            <td class="text-center">{{ rpd.data_criacao|date:"d/m/Y" }}</td>
+                            <td class="text-center">
+                                {% if rpd.data_acontecimento %}
+                                    {{ rpd.data_acontecimento|date:"d/m/Y H:i" }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td>{{ rpd.situacao|truncatechars:80 }}</td>
+                            <td>{{ rpd.pensamentos_automaticos|truncatechars:80 }}</td>
+                            <td>{{ rpd.emocao|truncatechars:80 }}</td>
+                            <td>{{ rpd.conclusao|truncatechars:80 }}</td>
+                            <td>{{ rpd.resultado|truncatechars:80 }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'detalhar_rpd_profissional' rpd.id %}" class="btn btn-sm btn-info">Ver</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-warning text-center">
+            Nenhum RPD registrado até o momento.
+        </div>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{% url 'perfil_paciente' paciente.id %}" class="btn btn-secondary">Voltar ao Perfil do Paciente</a>
+    </div>
+</div>
+
+</body>
+</html>

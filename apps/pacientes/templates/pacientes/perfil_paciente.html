@@ -17,4 +17,5 @@
 {% endif %}
 <a href="{% url 'editar_anamnese' paciente.id %}" class="btn btn-primary mt-2">Editar Anamnese</a>
 
-<h3>Adicionar aqui opção de ver tarefas de casa</h3>
+<h3>Tarefas de Casa</h3>
+<a href="{% url 'listar_rpds_paciente' paciente.id %}" class="btn btn-primary mt-2">Listar RPD's realizados</a>

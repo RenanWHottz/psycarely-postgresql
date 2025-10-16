@@ -1,0 +1,19 @@
+<!--/templates/registro/detalhar_rpd_profissional.html-->
+<h2>Detalhes do RPD - {{ rpd.paciente.get_full_name }}</h2>
+<hr>
+
+<p><strong>Realizado em:</strong> {{ rpd.data_criacao|date:"d/m/Y" }}</p>
+<p><strong>Data/Hora do acontecimento:</strong>
+    {% if rpd.data_acontecimento %}
+        {{ rpd.data_acontecimento|date:"d/m/Y H:i" }}
+    {% else %}
+        —
+    {% endif %}
+</p>
+<p><strong>Situação:</strong> {{ rpd.situacao }}</p>
+<p><strong>Pensamentos Automáticos:</strong> {{ rpd.pensamentos_automaticos }}</p>
+<p><strong>Emoção:</strong> {{ rpd.emocao }}</p>
+<p><strong>Conclusão:</strong> {{ rpd.conclusao }}</p>
+<p><strong>Resultado:</strong> {{ rpd.resultado }}</p>
+
+<a href="{% url 'listar_rpds_paciente' rpd.paciente.id %}" class="btn btn-secondary">Voltar</a>
