@@ -55,3 +55,50 @@ class RegistroHumor(models.Model):
 
     class Meta:
         ordering = ['-data_humor']
+
+class AnotacaoGeral(models.Model):
+    paciente = models.OneToOneField(
+        Usuario,
+        on_delete=models.CASCADE,
+        limit_choices_to={'tipo': 'paciente'},
+        related_name='anotacao_geral'
+    )
+    profissional = models.ForeignKey(
+        Usuario,
+        on_delete=models.SET_NULL,
+        limit_choices_to={'tipo': 'profissional'},
+        null=True,
+        blank=True,
+        related_name='anotacoes_gerais'
+    )
+    conteudo = models.TextField(blank=True)
+    ultima_atualizacao = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Anotação Geral - {self.paciente.get_full_name()}"
+
+class AnotacaoConsulta(models.Model):
+    paciente = models.ForeignKey(
+        Usuario,
+        on_delete=models.CASCADE,
+        limit_choices_to={'tipo': 'paciente'},
+        related_name='anotacoes_consulta_paciente'
+    )
+    profissional = models.ForeignKey(
+        Usuario,
+        on_delete=models.SET_NULL,
+        limit_choices_to={'tipo': 'profissional'},
+        null=True,
+        blank=True,
+        related_name='anotacoes_consulta_profissional'
+    )
+    data_consulta = models.DateField(default=timezone.now)
+    conteudo = models.TextField(blank=True)
+    criada_em = models.DateTimeField(auto_now_add=True)
+    atualizada_em = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Anotação de Consulta - {self.paciente.get_full_name()} ({self.data_consulta.strftime('%d/%m/%Y')})"
+
+    class Meta:
+        ordering = ['-data_consulta']

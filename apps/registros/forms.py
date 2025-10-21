@@ -1,7 +1,7 @@
 #apps/registros/forms.py
 from django import forms
 from django.utils import timezone
-from .models import RPD, RegistroHumor
+from .models import RPD, RegistroHumor, AnotacaoGeral, AnotacaoConsulta
 
 class RPDForm(forms.ModelForm):
     class Meta:
@@ -39,14 +39,46 @@ class RegistroHumorForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         agora = timezone.localtime(timezone.now()).strftime("%Y-%m-%dT%H:%M")
-        # Define valor inicial se não vier do POST
         if not self.data.get('data_humor'):
             self.initial['data_humor'] = agora
-            # aplica também no widget (garante exibição no input)
             self.fields['data_humor'].widget.attrs['value'] = agora
 
     def clean_data_humor(self):
         data = self.cleaned_data['data_humor']
         if data > timezone.now():
             raise forms.ValidationError("A data e hora devem ser anteriores ao momento atual.")
+        return data
+
+class AnotacaoGeralForm(forms.ModelForm):
+    class Meta:
+        model = AnotacaoGeral
+        fields = ['conteudo']
+        widgets = {
+            'conteudo': forms.Textarea(attrs={
+                'rows': 12,
+                'class': 'form-control',
+                'placeholder': 'Escreva suas anotações sobre este paciente aqui...',
+            })
+        }
+
+class AnotacaoConsultaForm(forms.ModelForm):
+    class Meta:
+        model = AnotacaoConsulta
+        fields = ['data_consulta', 'conteudo']
+        widgets = {
+            'data_consulta': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'form-control'
+            }),
+            'conteudo': forms.Textarea(attrs={
+                'rows': 10,
+                'class': 'form-control',
+                'placeholder': 'Escreva as observações da consulta aqui...'
+            }),
+        }
+
+    def clean_data_consulta(self):
+        data = self.cleaned_data['data_consulta']
+        if data > timezone.localdate():
+            raise forms.ValidationError("A data da consulta não pode ser futura.")
         return data

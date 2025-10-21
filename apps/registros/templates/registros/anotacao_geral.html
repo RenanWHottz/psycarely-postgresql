@@ -1,0 +1,29 @@
+<!-- /templates/registros/anotacao_geral.html -->
+<a href="{% url 'listar_anotacoes_paciente' paciente.id %}" class="btn btn-outline-primary">Voltar às Anotações</a>
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Anotação Geral - {{ paciente.get_full_name }}</h2>
+
+    <form method="POST" class="shadow p-4 bg-white rounded-3" style="max-width: 900px; margin: auto;">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_conteudo" class="form-label fw-bold">Conteúdo</label>
+            <textarea
+                name="conteudo"
+                id="id_conteudo"
+                class="form-control"
+                rows="18"
+                style="font-size: 1.05rem; line-height: 1.6; background-color: #fdfdfd; border: 1px solid #ccc; padding: 15px;"
+            >{{ form.conteudo.value|default_if_none:"" }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3 px-4">💾 Salvar</button>
+    </form>
+
+    {% if paciente.anotacao_geral.ultima_atualizacao %}
+    <p class="text-muted text-center mt-3">
+        Última atualização: {{ paciente.anotacao_geral.ultima_atualizacao|date:"d/m/Y H:i" }}
+    </p>
+    {% endif %}
+</div>
+

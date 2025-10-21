@@ -14,4 +14,7 @@ urlpatterns = [
     path('humor/novo/', views.registrar_humor, name='registrar_humor'),
     path('humor/listar/', views.listar_humores, name='listar_humores'),
     path('profissional/paciente/<int:paciente_id>/humores/', views.listar_humores_paciente, name='listar_humores_paciente'),
+    path('profissional/paciente/<int:paciente_id>/anotacao-geral/', views.editar_anotacao_geral, name='editar_anotacao_geral'),
+    path('profissional/paciente/<int:paciente_id>/anotacoes/', views.listar_anotacoes_paciente, name='listar_anotacoes_paciente'),
+    path('profissional/paciente/<int:paciente_id>/anotacao-consulta/nova/', views.nova_anotacao_consulta, name='nova_anotacao_consulta'),
 ]

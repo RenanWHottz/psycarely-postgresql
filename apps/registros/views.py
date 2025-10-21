@@ -2,8 +2,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from apps.usuarios.decorators import profissional_required, paciente_required
 from django.contrib.auth.decorators import login_required
-from .models import RPD, RegistroHumor
-from .forms import RPDForm, RegistroHumorForm
+from .models import RPD, RegistroHumor, AnotacaoGeral, AnotacaoConsulta
+from .forms import RPDForm, RegistroHumorForm, AnotacaoGeralForm, AnotacaoConsultaForm
 from django.utils import timezone
 
 
@@ -121,3 +121,88 @@ def listar_humores_paciente(request, paciente_id):
         'paciente': paciente,
     }
     return render(request, 'registros/listar_humores_profissional.html', context)
+
+@login_required
+@profissional_required
+def editar_anotacao_geral(request, paciente_id):
+    from apps.pacientes.models import Vinculo
+    paciente_vinculado = get_object_or_404(Vinculo, paciente__id=paciente_id, profissional=request.user, ativo=True)
+    paciente = paciente_vinculado.paciente
+
+    anotacao, _ = AnotacaoGeral.objects.get_or_create(
+        paciente=paciente,
+        defaults={'profissional': request.user}
+    )
+
+    if request.method == 'POST':
+        form = AnotacaoGeralForm(request.POST, instance=anotacao)
+        if form.is_valid():
+            form.save()
+            return redirect('editar_anotacao_geral', paciente_id=paciente.id)
+    else:
+        form = AnotacaoGeralForm(instance=anotacao)
+
+    return render(request, 'registros/anotacao_geral.html', {
+        'form': form,
+        'paciente': paciente,
+    })
+
+@login_required
+@profissional_required
+def listar_anotacoes_paciente(request, paciente_id):
+    from apps.pacientes.models import Vinculo
+    vinculo = get_object_or_404(Vinculo, paciente__id=paciente_id, profissional=request.user, ativo=True)
+    paciente = vinculo.paciente
+
+    #para fazer a pesquisa de conteúdo das anotações: AnotacaoGeral.objects.filter(conteudo__icontains=palavra_chave)
+    #Por enquanto, apenas a anotação geral
+    anotacao_geral = getattr(paciente, 'anotacao_geral', None)
+
+    contexto = {
+        'paciente': paciente,
+        'anotacao_geral': anotacao_geral,
+    }
+
+    return render(request, 'registros/listar_anotacoes.html', contexto)
+
+@login_required
+@profissional_required
+def nova_anotacao_consulta(request, paciente_id):
+    from apps.pacientes.models import Vinculo
+    vinculo = get_object_or_404(Vinculo, paciente__id=paciente_id, profissional=request.user, ativo=True)
+    paciente = vinculo.paciente
+
+    if request.method == 'POST':
+        form = AnotacaoConsultaForm(request.POST)
+        if form.is_valid():
+            anotacao = form.save(commit=False)
+            anotacao.paciente = paciente
+            anotacao.profissional = request.user
+            anotacao.save()
+            return redirect('listar_anotacoes_paciente', paciente_id=paciente.id)
+    else:
+        form = AnotacaoConsultaForm()
+
+    return render(request, 'registros/nova_anotacao_consulta.html', {
+        'form': form,
+        'paciente': paciente
+    })
+
+
+@login_required
+@profissional_required
+def listar_anotacoes_paciente(request, paciente_id):
+    from apps.pacientes.models import Vinculo
+    vinculo = get_object_or_404(Vinculo, paciente__id=paciente_id, profissional=request.user, ativo=True)
+    paciente = vinculo.paciente
+
+    anotacao_geral = getattr(paciente, 'anotacao_geral', None)
+    anotacoes_consulta = paciente.anotacoes_consulta_paciente.all().order_by('-data_consulta')
+
+    contexto = {
+        'paciente': paciente,
+        'anotacao_geral': anotacao_geral,
+        'anotacoes_consulta': anotacoes_consulta,
+    }
+
+    return render(request, 'registros/listar_anotacoes.html', contexto)

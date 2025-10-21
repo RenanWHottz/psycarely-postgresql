@@ -1,0 +1,46 @@
+<!-- /templates/registros/listar_anotacoes.html -->
+<a href="{% url 'perfil_paciente' paciente.id %}" class="btn btn-secondary">Voltar ao Perfil do Paciente</a>
+
+<h2 class="mt-3">Anotações</h2>
+
+<p class="text-muted">ADICIONAR OS FILTROS AQUI</p>
+
+{% if anotacao_geral %}
+<h4 class="mt-4">📝 Anotação Geral</h4>
+<p>{{ anotacao_geral.conteudo|linebreaks }}</p>
+<a href="{% url 'editar_anotacao_geral' paciente.id %}" class="btn btn-sm btn-primary mt-2">Editar Anotação Geral</a>
+{% else %}
+<a href="{% url 'editar_anotacao_geral' paciente.id %}" class="btn btn-sm btn-primary mt-2">Criar Anotação Geral</a>
+{% endif %}
+
+<hr>
+
+<div class="d-flex justify-content-between align-items-center mt-4">
+    <h4>📅 Anotações de Consulta</h4>
+    <a href="{% url 'nova_anotacao_consulta' paciente.id %}" class="btn btn-success btn-sm">+ Nova Anotação de Consulta</a>
+</div>
+
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>Data da Consulta</th>
+            <th>Última Atualização</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for anotacao in anotacoes_consulta %}
+        <tr>
+            <td>{{ anotacao.data_consulta|date:"d/m/Y" }}</td>
+            <td>{{ anotacao.atualizada_em|date:"d/m/Y H:i" }}</td>
+            <td>
+                <a href="#" class="btn btn-sm btn-primary disabled">Editar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3" class="text-center text-muted">Nenhuma anotação de consulta registrada.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
