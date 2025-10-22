@@ -1,0 +1,40 @@
+<!-- /templates/registros/editar_anotacao_consulta.html -->
+<a href="{% url 'listar_anotacoes_paciente' paciente.id %}" class="btn btn-outline-primary">Voltar às Anotações</a>
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Anotação de Consulta - {{ paciente.get_full_name }}</h2>
+    <p class="text-muted text-center">Data da consulta: {{ anotacao.data_consulta|date:"d/m/Y" }}</p>
+
+    <form method="POST" class="shadow p-4 bg-white rounded-3" style="max-width: 900px; margin: auto;">
+        {% csrf_token %}
+        <div class="form-group mb-3">
+            <label for="id_data_consulta" class="form-label fw-bold">Data da Consulta</label>
+            <input type="date" 
+                   name="data_consulta" 
+                   id="id_data_consulta" 
+                   class="form-control" 
+                   value="{{ form.data_consulta.value|default_if_none:anotacao.data_consulta }}" 
+                   {% if somente_leitura %}readonly{% endif %}>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="id_conteudo" class="form-label fw-bold">Conteúdo</label>
+            <textarea name="conteudo"
+                      id="id_conteudo"
+                      class="form-control"
+                      rows="15"
+                      style="font-size: 1.05rem; line-height: 1.6;"
+                      {% if somente_leitura %}readonly{% endif %}>{{ form.conteudo.value|default_if_none:anotacao.conteudo }}</textarea>
+        </div>
+
+        {% if not somente_leitura %}
+        <button type="submit" class="btn btn-primary mt-3 px-4">Salvar</button>
+        {% endif %}
+    </form>
+
+    {% if anotacao.atualizada_em %}
+    <p class="text-muted text-center mt-3">
+        Última atualização: {{ anotacao.atualizada_em|date:"d/m/Y H:i" }}
+    </p>
+    {% endif %}
+</div>

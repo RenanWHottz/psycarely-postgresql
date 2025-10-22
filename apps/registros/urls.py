@@ -17,4 +17,5 @@ urlpatterns = [
     path('profissional/paciente/<int:paciente_id>/anotacao-geral/', views.editar_anotacao_geral, name='editar_anotacao_geral'),
     path('profissional/paciente/<int:paciente_id>/anotacoes/', views.listar_anotacoes_paciente, name='listar_anotacoes_paciente'),
     path('profissional/paciente/<int:paciente_id>/anotacao-consulta/nova/', views.nova_anotacao_consulta, name='nova_anotacao_consulta'),
+    path('profissional/anotacao-consulta/<int:anotacao_id>/editar/', views.editar_anotacao_consulta, name='editar_anotacao_consulta'),
 ]

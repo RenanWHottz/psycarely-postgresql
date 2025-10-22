@@ -34,7 +34,7 @@
             <td>{{ anotacao.data_consulta|date:"d/m/Y" }}</td>
             <td>{{ anotacao.atualizada_em|date:"d/m/Y H:i" }}</td>
             <td>
-                <a href="#" class="btn btn-sm btn-primary disabled">Editar</a>
+                <a href="{% url 'editar_anotacao_consulta' anotacao.id %}" class="btn btn-sm btn-primary">Editar</a>
             </td>
         </tr>
         {% empty %}

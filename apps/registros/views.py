@@ -147,6 +147,7 @@ def editar_anotacao_geral(request, paciente_id):
         'paciente': paciente,
     })
 
+"""
 @login_required
 @profissional_required
 def listar_anotacoes_paciente(request, paciente_id):
@@ -164,7 +165,7 @@ def listar_anotacoes_paciente(request, paciente_id):
     }
 
     return render(request, 'registros/listar_anotacoes.html', contexto)
-
+"""
 @login_required
 @profissional_required
 def nova_anotacao_consulta(request, paciente_id):
@@ -206,3 +207,26 @@ def listar_anotacoes_paciente(request, paciente_id):
     }
 
     return render(request, 'registros/listar_anotacoes.html', contexto)
+
+@login_required
+@profissional_required
+def editar_anotacao_consulta(request, anotacao_id):
+    from apps.pacientes.models import Vinculo
+    anotacao = get_object_or_404(AnotacaoConsulta, id=anotacao_id)
+    vinculo = get_object_or_404(Vinculo, paciente=anotacao.paciente, profissional=request.user, ativo=True)
+    paciente = vinculo.paciente
+
+    if request.method == 'POST':
+        form = AnotacaoConsultaForm(request.POST, instance=anotacao)
+        if form.is_valid():
+            form.save()
+            return redirect('listar_anotacoes_paciente', paciente_id=paciente.id)
+    else:
+        form = AnotacaoConsultaForm(instance=anotacao)
+
+    return render(request, 'registros/editar_anotacao_consulta.html', {
+        'form': form,
+        'anotacao': anotacao,
+        'paciente': paciente,
+        'somente_leitura': False 
+    })
