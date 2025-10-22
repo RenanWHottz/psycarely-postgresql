@@ -147,25 +147,6 @@ def editar_anotacao_geral(request, paciente_id):
         'paciente': paciente,
     })
 
-"""
-@login_required
-@profissional_required
-def listar_anotacoes_paciente(request, paciente_id):
-    from apps.pacientes.models import Vinculo
-    vinculo = get_object_or_404(Vinculo, paciente__id=paciente_id, profissional=request.user, ativo=True)
-    paciente = vinculo.paciente
-
-    #para fazer a pesquisa de conteúdo das anotações: AnotacaoGeral.objects.filter(conteudo__icontains=palavra_chave)
-    #Por enquanto, apenas a anotação geral
-    anotacao_geral = getattr(paciente, 'anotacao_geral', None)
-
-    contexto = {
-        'paciente': paciente,
-        'anotacao_geral': anotacao_geral,
-    }
-
-    return render(request, 'registros/listar_anotacoes.html', contexto)
-"""
 @login_required
 @profissional_required
 def nova_anotacao_consulta(request, paciente_id):
@@ -197,8 +178,15 @@ def listar_anotacoes_paciente(request, paciente_id):
     vinculo = get_object_or_404(Vinculo, paciente__id=paciente_id, profissional=request.user, ativo=True)
     paciente = vinculo.paciente
 
+    query = request.GET.get('q', '')
+
     anotacao_geral = getattr(paciente, 'anotacao_geral', None)
+    if query and anotacao_geral and query.lower() not in anotacao_geral.conteudo.lower():
+        anotacao_geral = None
+
     anotacoes_consulta = paciente.anotacoes_consulta_paciente.all().order_by('-data_consulta')
+    if query:
+        anotacoes_consulta = anotacoes_consulta.filter(conteudo__icontains=query)
 
     contexto = {
         'paciente': paciente,
@@ -207,6 +195,7 @@ def listar_anotacoes_paciente(request, paciente_id):
     }
 
     return render(request, 'registros/listar_anotacoes.html', contexto)
+
 
 @login_required
 @profissional_required
