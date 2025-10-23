@@ -138,14 +138,11 @@ def editar_anotacao_geral(request, paciente_id):
         form = AnotacaoGeralForm(request.POST, instance=anotacao)
         if form.is_valid():
             form.save()
-            return redirect('editar_anotacao_geral', paciente_id=paciente.id)
+            return redirect('listar_anotacoes_paciente', paciente_id=paciente.id)
     else:
         form = AnotacaoGeralForm(instance=anotacao)
 
-    return render(request, 'registros/anotacao_geral.html', {
-        'form': form,
-        'paciente': paciente,
-    })
+    return render(request, 'registros/anotacao_geral.html', {'form': form,'paciente': paciente,})
 
 @login_required
 @profissional_required
