@@ -33,6 +33,7 @@ settings.py
 # Sistema
 .DS_Store
 Thumbs.db
+.env
 
 # Banco de dados
 *.db
