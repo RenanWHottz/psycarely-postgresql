@@ -81,9 +81,9 @@ def listar_rpds_paciente(request, paciente_id):
 @profissional_required
 def detalhar_rpd_profissional(request, rpd_id):
     from apps.pacientes.models import Vinculo
+    rpd = get_object_or_404(RPD, id=rpd_id)
     if not Vinculo.objects.filter(paciente=rpd.paciente, profissional=request.user, ativo=True).exists():
         return redirect('lista_pacientes')
-
     return render(request, 'registros/detalhar_rpd_profissional.html', {'rpd': rpd})
 
 @login_required
