@@ -17,6 +17,9 @@
 {% endif %}
 <a href="{% url 'editar_anamnese' paciente.id %}" class="btn btn-primary mt-2">Editar Anamnese</a>
 
+<h3>Consultas</h3>
+<a href="{% url 'listar_consultas' paciente.id %}" class="btn btn-outline-success">Ver Consultas</a>
+
 <h3>Anotações</h3>
 <a href="{% url 'listar_anotacoes_paciente' paciente.id %}" class="btn btn-outline-primary">Anotações</a>
 
