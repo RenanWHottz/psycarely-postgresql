@@ -21,8 +21,8 @@
       <td>{{ consulta.data|date:"d/m/Y" }}</td>
       <td>{{ consulta.horario|time:"H:i" }}</td>
       <td>
-        {% if consulta.recorrente %}
-          A cada {{ consulta.recorrencia_valor }} {{ consulta.get_recorrencia_unidade_display }}
+        {% if consulta.recorrencia %}
+          A cada {{ consulta.recorrencia.recorrencia_valor }} {{ consulta.recorrencia.get_recorrencia_unidade_display }}
         {% else %}
           Não recorrente
         {% endif %}

@@ -1,3 +1,4 @@
+#core/settings.py:
 """
 Django settings for core project.
 
@@ -71,6 +72,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
+
 
 
 # Database
