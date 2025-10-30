@@ -1,3 +1,4 @@
+#core/settings.py:
 """
 Django settings for core project.
 
@@ -55,6 +56,7 @@ INSTALLED_APPS = [
     'apps.usuarios',
     'apps.pacientes',
     'apps.registros',
+    'apps.consultas',
 ]
 
 MIDDLEWARE = [
@@ -85,6 +87,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
+
 
 
 # Database

@@ -1,0 +1,39 @@
+<!--templates/consultas/listar_consultas.html-->
+<a href="{% url 'perfil_paciente' vinculo.paciente.id %}">← Voltar ao perfil</a>
+
+<h2>Consultas de {{ vinculo.paciente.get_full_name }}</h2>
+
+<a href="{% url 'marcar_consulta' vinculo.paciente.id %}" class="btn btn-primary mb-3">Marcar Consulta</a>
+
+{% if consultas %}
+<table class="table">
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Horário</th>
+      <th>Recorrência</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for consulta in consultas %}
+    <tr>
+      <td>{{ consulta.data|date:"d/m/Y" }}</td>
+      <td>{{ consulta.horario|time:"H:i" }}</td>
+      <td>
+        {% if consulta.recorrencia %}
+          A cada {{ consulta.recorrencia.recorrencia_valor }} {{ consulta.recorrencia.get_recorrencia_unidade_display }}
+        {% else %}
+          Não recorrente
+        {% endif %}
+      </td>
+      <td>
+        <a href="{% url 'editar_consulta' consulta.id %}" class="btn btn-sm btn-warning">Editar</a>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>Nenhuma consulta marcada.</p>
+{% endif %}
