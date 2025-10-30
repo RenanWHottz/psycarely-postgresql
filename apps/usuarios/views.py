@@ -6,6 +6,9 @@ from django.contrib import messages
 from django.http import HttpResponse
 from .forms import LoginForm, CadastroForm, PerfilPacienteForm, PerfilProfissionalForm
 from .decorators import profissional_required, paciente_required
+from apps.consultas.models import Consulta
+from django.utils import timezone
+from datetime import timedelta
 
 
 def login_view(request):
@@ -39,8 +42,13 @@ def cadastro_view(request):
 @login_required
 @profissional_required
 def dashboard_profissional(request):
-    #consultas, tarefas e notificações
-    return render(request, 'usuarios/dashboard_profissional.html')
+    hoje = timezone.localdate()
+    proximas_consultas = (
+        Consulta.objects.filter(profissional=request.user, data__gte=hoje)
+        .order_by('data', 'horario')[:4]
+    )
+
+    return render(request, 'usuarios/dashboard_profissional.html', {'proximas_consultas': proximas_consultas,})
 
 @login_required
 @paciente_required

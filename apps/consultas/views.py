@@ -6,6 +6,9 @@ from django.db import IntegrityError
 from apps.pacientes.models import Vinculo
 from .models import Consulta, Recorrencia
 from .forms import ConsultaForm
+from django.http import JsonResponse
+from django.utils import timezone
+from datetime import datetime, timedelta
 
 
 @login_required
@@ -109,3 +112,56 @@ def editar_consulta(request, consulta_id):
         form = ConsultaForm(instance=consulta)
 
     return render(request, 'consultas/editar_consulta.html', {'form': form, 'consulta': consulta})
+
+@login_required
+def dashboard_profissional(request):
+    """Exibe o dashboard do profissional com as próximas 4 consultas (a partir de hoje)."""
+    hoje = timezone.localdate()
+    proximas = Consulta.objects.filter(
+        profissional=request.user,
+        data__gte=hoje
+    ).order_by('data', 'horario')[:4]
+
+    return render(request, 'usuarios/dashboard_profissional.html', {'proximas_consultas': proximas})
+
+@login_required
+def calendar_events(request):
+    """
+    Endpoint JSON para o FullCalendar.
+    Recebe GET params 'start' e 'end' no formato ISO e retorna eventos no intervalo.
+    """
+    start = request.GET.get('start')
+    end = request.GET.get('end')
+    try:
+        start_date = datetime.fromisoformat(start).date() if start else timezone.localdate()
+        end_date = datetime.fromisoformat(end).date() if end else start_date + timedelta(days=30)
+    except Exception:
+        start_date = timezone.localdate()
+        end_date = start_date + timedelta(days=30)
+
+    eventos = Consulta.objects.filter(
+        profissional=request.user,
+        data__gte=start_date,
+        data__lte=end_date
+    ).order_by('data', 'horario')
+
+    items = []
+    for c in eventos:
+        # cria datetimes ISO para o FullCalendar (assume timezone naive + local date/time)
+        start_dt = datetime.combine(c.data, c.horario)
+        end_dt = start_dt + timedelta(hours=1)
+        items.append({
+            'id': c.id,
+            'title': f"{c.paciente.get_full_name()}",
+            'start': start_dt.isoformat(),
+            'end': end_dt.isoformat(),
+            'allDay': False,
+            'recorrencia_id': c.recorrencia.id if c.recorrencia else None,
+        })
+
+    return JsonResponse(items, safe=False)
+
+@login_required
+def calendario_consultas(request):
+    """Renderiza a página do calendário do profissional."""
+    return render(request, 'consultas/calendario_consultas.html')
