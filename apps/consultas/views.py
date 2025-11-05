@@ -1,4 +1,4 @@
-# apps/consultas/views.py
+#apps/consultas/views.py:
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -8,7 +8,8 @@ from .models import Consulta, Recorrencia
 from .forms import ConsultaForm
 from django.http import JsonResponse
 from django.utils import timezone
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
+from dateutil.relativedelta import relativedelta
 
 
 @login_required
@@ -16,6 +17,44 @@ def listar_consultas(request, paciente_id):
     vinculo = get_object_or_404(Vinculo, paciente_id=paciente_id, profissional=request.user)
     consultas = Consulta.objects.filter(vinculo=vinculo).order_by('data', 'horario')
     return render(request, 'consultas/listar_consultas.html', {'vinculo': vinculo, 'consultas': consultas})
+
+
+def gerar_consultas_recorrentes(recorrencia, data_inicial):
+    """
+    Gera automaticamente consultas para os próximos 6 meses a partir da data inicial.
+    """
+    data_final = data_inicial + relativedelta(months=6)
+    data_atual = data_inicial
+
+    while data_atual <= data_final:
+        # Avança até o próximo dia da semana configurado
+        while data_atual.weekday() != recorrencia.dia_semana:
+            data_atual += timedelta(days=1)
+
+        # Cria consulta se ainda não existir
+        if not Consulta.objects.filter(
+            profissional=recorrencia.profissional,
+            data=data_atual,
+            horario=recorrencia.horario_padrao
+        ).exists():
+            Consulta.objects.create(
+                vinculo=recorrencia.vinculo,
+                profissional=recorrencia.profissional,
+                paciente=recorrencia.paciente,
+                data=data_atual,
+                horario=recorrencia.horario_padrao,
+                recorrencia=recorrencia
+            )
+
+        # Avança conforme a unidade e valor da recorrência
+        if recorrencia.recorrencia_unidade == 'semanas':
+            data_atual += timedelta(weeks=recorrencia.recorrencia_valor)
+        elif recorrencia.recorrencia_unidade == 'meses':
+            data_atual += relativedelta(months=recorrencia.recorrencia_valor)
+        elif recorrencia.recorrencia_unidade == 'anos':
+            data_atual += relativedelta(years=recorrencia.recorrencia_valor)
+        else:
+            break
 
 
 @login_required
@@ -30,7 +69,6 @@ def marcar_consulta(request, paciente_id):
             consulta.profissional = vinculo.profissional
             consulta.paciente = vinculo.paciente
 
-            # Lógica de recorrência
             if form.cleaned_data.get('recorrente'):
                 recorrencia, created = Recorrencia.objects.get_or_create(
                     vinculo=vinculo,
@@ -43,13 +81,18 @@ def marcar_consulta(request, paciente_id):
                         'dia_semana': consulta.data.weekday()
                     }
                 )
+
                 if not created:
                     recorrencia.recorrencia_valor = form.cleaned_data['recorrencia_valor']
                     recorrencia.recorrencia_unidade = form.cleaned_data['recorrencia_unidade']
                     recorrencia.horario_padrao = consulta.horario
                     recorrencia.dia_semana = consulta.data.weekday()
                     recorrencia.save()
+
                 consulta.recorrencia = recorrencia
+
+                # 🔥 Gera automaticamente as consultas futuras
+                gerar_consultas_recorrentes(recorrencia, consulta.data)
             else:
                 consulta.recorrencia = None
 
@@ -80,7 +123,6 @@ def editar_consulta(request, consulta_id):
 
         form = ConsultaForm(request.POST, instance=consulta)
         if form.is_valid():
-            # Atualiza recorrência
             if form.cleaned_data.get('recorrente'):
                 recorrencia, created = Recorrencia.objects.get_or_create(
                     vinculo=consulta.vinculo,
@@ -113,6 +155,7 @@ def editar_consulta(request, consulta_id):
 
     return render(request, 'consultas/editar_consulta.html', {'form': form, 'consulta': consulta})
 
+
 @login_required
 def dashboard_profissional(request):
     """Exibe o dashboard do profissional com as próximas 4 consultas (a partir de hoje)."""
@@ -123,6 +166,7 @@ def dashboard_profissional(request):
     ).order_by('data', 'horario')[:4]
 
     return render(request, 'usuarios/dashboard_profissional.html', {'proximas_consultas': proximas})
+
 
 @login_required
 def calendar_events(request):
@@ -147,7 +191,6 @@ def calendar_events(request):
 
     items = []
     for c in eventos:
-        # cria datetimes ISO para o FullCalendar (assume timezone naive + local date/time)
         start_dt = datetime.combine(c.data, c.horario)
         end_dt = start_dt + timedelta(hours=1)
         items.append({
@@ -160,6 +203,7 @@ def calendar_events(request):
         })
 
     return JsonResponse(items, safe=False)
+
 
 @login_required
 def calendario_consultas(request):
