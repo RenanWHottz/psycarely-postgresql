@@ -16,22 +16,62 @@ from dateutil.relativedelta import relativedelta
 def listar_consultas(request, paciente_id):
     vinculo = get_object_or_404(Vinculo, paciente_id=paciente_id, profissional=request.user)
     consultas = Consulta.objects.filter(vinculo=vinculo).order_by('data', 'horario')
-    return render(request, 'consultas/listar_consultas.html', {'vinculo': vinculo, 'consultas': consultas})
+    recorrencia = Recorrencia.objects.filter(vinculo=vinculo).first()
+    return render(request, 'consultas/listar_consultas.html', {
+        'vinculo': vinculo,
+        'consultas': consultas,
+        'recorrencia': recorrencia
+    })
 
+@login_required
+def excluir_recorrencia(request, recorrencia_id):
+    recorrencia = get_object_or_404(Recorrencia, id=recorrencia_id, profissional=request.user)
+    paciente_id = recorrencia.paciente.id
+    recorrencia.delete()
+    messages.success(request, "Recorrência e todas as consultas associadas foram excluídas.")
+    return redirect('listar_consultas', paciente_id=paciente_id)
+
+@login_required
+def editar_recorrencia(request, recorrencia_id):
+    recorrencia = get_object_or_404(Recorrencia, id=recorrencia_id, profissional=request.user)
+    paciente_id = recorrencia.paciente.id
+
+    if request.method == 'POST':
+        valor = request.POST.get('recorrencia_valor')
+        unidade = request.POST.get('recorrencia_unidade')
+        horario = request.POST.get('horario_padrao')
+        dia_semana = request.POST.get('dia_semana')
+
+        if valor and unidade and horario is not None:
+            recorrencia.recorrencia_valor = int(valor)
+            recorrencia.recorrencia_unidade = unidade
+            recorrencia.horario_padrao = horario
+            recorrencia.dia_semana = int(dia_semana)
+            recorrencia.save()
+
+            Consulta.objects.filter(recorrencia=recorrencia).delete()
+            data_inicial = timezone.localdate()
+
+            while data_inicial.weekday() != recorrencia.dia_semana:
+                data_inicial += timedelta(days=1)
+
+            gerar_consultas_recorrentes(recorrencia, data_inicial)
+
+            messages.success(request, "Recorrência e consultas recriadas com sucesso.")
+            return redirect('listar_consultas', paciente_id=paciente_id)
+        else:
+            messages.error(request, "Preencha todos os campos corretamente.")
+    
+    return render(request, 'consultas/editar_recorrencia.html', {'recorrencia': recorrencia})
 
 def gerar_consultas_recorrentes(recorrencia, data_inicial):
-    """
-    Gera automaticamente consultas para os próximos 6 meses a partir da data inicial.
-    """
     data_final = data_inicial + relativedelta(months=6)
     data_atual = data_inicial
 
     while data_atual <= data_final:
-        # Avança até o próximo dia da semana configurado
         while data_atual.weekday() != recorrencia.dia_semana:
             data_atual += timedelta(days=1)
 
-        # Cria consulta se ainda não existir
         if not Consulta.objects.filter(
             profissional=recorrencia.profissional,
             data=data_atual,
@@ -46,7 +86,6 @@ def gerar_consultas_recorrentes(recorrencia, data_inicial):
                 recorrencia=recorrencia
             )
 
-        # Avança conforme a unidade e valor da recorrência
         if recorrencia.recorrencia_unidade == 'semanas':
             data_atual += timedelta(weeks=recorrencia.recorrencia_valor)
         elif recorrencia.recorrencia_unidade == 'meses':
@@ -55,7 +94,6 @@ def gerar_consultas_recorrentes(recorrencia, data_inicial):
             data_atual += relativedelta(years=recorrencia.recorrencia_valor)
         else:
             break
-
 
 @login_required
 def marcar_consulta(request, paciente_id):
@@ -88,12 +126,13 @@ def marcar_consulta(request, paciente_id):
                     recorrencia.horario_padrao = consulta.horario
                     recorrencia.dia_semana = consulta.data.weekday()
                     recorrencia.save()
-
                 consulta.recorrencia = recorrencia
-
-                # 🔥 Gera automaticamente as consultas futuras
                 gerar_consultas_recorrentes(recorrencia, consulta.data)
+                print('gerou as consultas')
+                return redirect('listar_consultas', paciente_id=paciente_id)
             else:
+                print('entrou no erro!')
+                print(form.errors)
                 consulta.recorrencia = None
 
             try:

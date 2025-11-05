@@ -13,8 +13,7 @@ class Command(BaseCommand):
             f"[SCHEDULER] Iniciando agendador em {timezone.localtime(timezone.now())}"
         ))
 
-        # rotina: diariamente gerar/garantir buffer de consultas até 6 meses
-        # (pode ajustar para every().day.at("00:01") se preferir)
+        # rotina: diariamente gera e garante consultas até 6 meses
         schedule.every().day.at("00:01").do(gerar_consultas_recorrentes, horizon_months=6)
 
         # também roda na inicialização para não esperar até a meia-noite
