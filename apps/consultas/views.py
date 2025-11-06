@@ -1,4 +1,4 @@
-# apps/consultas/views.py
+#apps/consultas/views.py:
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -8,15 +8,93 @@ from .models import Consulta, Recorrencia
 from .forms import ConsultaForm
 from django.http import JsonResponse
 from django.utils import timezone
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
+from dateutil.relativedelta import relativedelta
+from calendar import monthrange
 
 
 @login_required
 def listar_consultas(request, paciente_id):
     vinculo = get_object_or_404(Vinculo, paciente_id=paciente_id, profissional=request.user)
     consultas = Consulta.objects.filter(vinculo=vinculo).order_by('data', 'horario')
-    return render(request, 'consultas/listar_consultas.html', {'vinculo': vinculo, 'consultas': consultas})
+    recorrencia = Recorrencia.objects.filter(vinculo=vinculo).first()
+    return render(request, 'consultas/listar_consultas.html', {
+        'vinculo': vinculo,
+        'consultas': consultas,
+        'recorrencia': recorrencia
+    })
 
+@login_required
+def excluir_recorrencia(request, recorrencia_id):
+    recorrencia = get_object_or_404(Recorrencia, id=recorrencia_id, profissional=request.user)
+    paciente_id = recorrencia.paciente.id
+    recorrencia.delete()
+    messages.success(request, "Recorrência e todas as consultas associadas foram excluídas.")
+    return redirect('listar_consultas', paciente_id=paciente_id)
+
+@login_required
+def editar_recorrencia(request, recorrencia_id):
+    recorrencia = get_object_or_404(Recorrencia, id=recorrencia_id, profissional=request.user)
+    paciente_id = recorrencia.paciente.id
+
+    if request.method == 'POST':
+        valor = request.POST.get('recorrencia_valor')
+        unidade = request.POST.get('recorrencia_unidade')
+        horario = request.POST.get('horario_padrao')
+        dia_semana = request.POST.get('dia_semana')
+
+        if valor and unidade and horario is not None:
+            recorrencia.recorrencia_valor = int(valor)
+            recorrencia.recorrencia_unidade = unidade
+            recorrencia.horario_padrao = horario
+            recorrencia.dia_semana = int(dia_semana)
+            recorrencia.save()
+
+            Consulta.objects.filter(recorrencia=recorrencia).delete()
+            data_inicial = timezone.localdate()
+
+            while data_inicial.weekday() != recorrencia.dia_semana:
+                data_inicial += timedelta(days=1)
+
+            gerar_consultas_recorrentes(recorrencia, data_inicial)
+
+            messages.success(request, "Recorrência e consultas recriadas com sucesso.")
+            return redirect('listar_consultas', paciente_id=paciente_id)
+        else:
+            messages.error(request, "Preencha todos os campos corretamente.")
+    
+    return render(request, 'consultas/editar_recorrencia.html', {'recorrencia': recorrencia})
+
+def gerar_consultas_recorrentes(recorrencia, data_inicial):
+    data_final = data_inicial + relativedelta(months=6)
+    data_atual = data_inicial
+
+    while data_atual <= data_final:
+        while data_atual.weekday() != recorrencia.dia_semana:
+            data_atual += timedelta(days=1)
+
+        if not Consulta.objects.filter(
+            profissional=recorrencia.profissional,
+            data=data_atual,
+            horario=recorrencia.horario_padrao
+        ).exists():
+            Consulta.objects.create(
+                vinculo=recorrencia.vinculo,
+                profissional=recorrencia.profissional,
+                paciente=recorrencia.paciente,
+                data=data_atual,
+                horario=recorrencia.horario_padrao,
+                recorrencia=recorrencia
+            )
+
+        if recorrencia.recorrencia_unidade == 'semanas':
+            data_atual += timedelta(weeks=recorrencia.recorrencia_valor)
+        elif recorrencia.recorrencia_unidade == 'meses':
+            data_atual += relativedelta(months=recorrencia.recorrencia_valor)
+        elif recorrencia.recorrencia_unidade == 'anos':
+            data_atual += relativedelta(years=recorrencia.recorrencia_valor)
+        else:
+            break
 
 @login_required
 def marcar_consulta(request, paciente_id):
@@ -30,7 +108,6 @@ def marcar_consulta(request, paciente_id):
             consulta.profissional = vinculo.profissional
             consulta.paciente = vinculo.paciente
 
-            # Lógica de recorrência
             if form.cleaned_data.get('recorrente'):
                 recorrencia, created = Recorrencia.objects.get_or_create(
                     vinculo=vinculo,
@@ -43,6 +120,7 @@ def marcar_consulta(request, paciente_id):
                         'dia_semana': consulta.data.weekday()
                     }
                 )
+
                 if not created:
                     recorrencia.recorrencia_valor = form.cleaned_data['recorrencia_valor']
                     recorrencia.recorrencia_unidade = form.cleaned_data['recorrencia_unidade']
@@ -50,6 +128,8 @@ def marcar_consulta(request, paciente_id):
                     recorrencia.dia_semana = consulta.data.weekday()
                     recorrencia.save()
                 consulta.recorrencia = recorrencia
+                gerar_consultas_recorrentes(recorrencia, consulta.data)
+                return redirect('listar_consultas', paciente_id=paciente_id)
             else:
                 consulta.recorrencia = None
 
@@ -80,7 +160,6 @@ def editar_consulta(request, consulta_id):
 
         form = ConsultaForm(request.POST, instance=consulta)
         if form.is_valid():
-            # Atualiza recorrência
             if form.cleaned_data.get('recorrente'):
                 recorrencia, created = Recorrencia.objects.get_or_create(
                     vinculo=consulta.vinculo,
@@ -113,6 +192,7 @@ def editar_consulta(request, consulta_id):
 
     return render(request, 'consultas/editar_consulta.html', {'form': form, 'consulta': consulta})
 
+
 @login_required
 def dashboard_profissional(request):
     """Exibe o dashboard do profissional com as próximas 4 consultas (a partir de hoje)."""
@@ -125,43 +205,43 @@ def dashboard_profissional(request):
     return render(request, 'usuarios/dashboard_profissional.html', {'proximas_consultas': proximas})
 
 @login_required
-def calendar_events(request):
-    """
-    Endpoint JSON para o FullCalendar.
-    Recebe GET params 'start' e 'end' no formato ISO e retorna eventos no intervalo.
-    """
-    start = request.GET.get('start')
-    end = request.GET.get('end')
-    try:
-        start_date = datetime.fromisoformat(start).date() if start else timezone.localdate()
-        end_date = datetime.fromisoformat(end).date() if end else start_date + timedelta(days=30)
-    except Exception:
-        start_date = timezone.localdate()
-        end_date = start_date + timedelta(days=30)
-
-    eventos = Consulta.objects.filter(
-        profissional=request.user,
-        data__gte=start_date,
-        data__lte=end_date
-    ).order_by('data', 'horario')
-
-    items = []
-    for c in eventos:
-        # cria datetimes ISO para o FullCalendar (assume timezone naive + local date/time)
-        start_dt = datetime.combine(c.data, c.horario)
-        end_dt = start_dt + timedelta(hours=1)
-        items.append({
-            'id': c.id,
-            'title': f"{c.paciente.get_full_name()}",
-            'start': start_dt.isoformat(),
-            'end': end_dt.isoformat(),
-            'allDay': False,
-            'recorrencia_id': c.recorrencia.id if c.recorrencia else None,
-        })
-
-    return JsonResponse(items, safe=False)
-
-@login_required
 def calendario_consultas(request):
-    """Renderiza a página do calendário do profissional."""
-    return render(request, 'consultas/calendario_consultas.html')
+    from calendar import monthrange
+    import calendar
+
+    profissional = request.user
+    hoje = date.today()
+
+    mes = int(request.GET.get('mes', hoje.month))
+    ano = int(request.GET.get('ano', hoje.year))
+
+    primeiro_dia = date(ano, mes, 1)
+    ultimo_dia = date(ano, mes, monthrange(ano, mes)[1])
+
+    consultas = Consulta.objects.filter(
+        profissional=profissional,
+        data__range=[primeiro_dia, ultimo_dia]
+    ).select_related('paciente').order_by('data', 'horario')
+
+    consultas_por_dia = {}
+    for consulta in consultas:
+        dia = consulta.data.day
+        consultas_por_dia.setdefault(dia, []).append(consulta)
+
+    cal = calendar.Calendar(firstweekday=6)
+    semanas = cal.monthdayscalendar(ano, mes)
+
+    meses = [
+        (1, "Janeiro"), (2, "Fevereiro"), (3, "Março"), (4, "Abril"),
+        (5, "Maio"), (6, "Junho"), (7, "Julho"), (8, "Agosto"),
+        (9, "Setembro"), (10, "Outubro"), (11, "Novembro"), (12, "Dezembro")
+    ]
+
+    return render(request, 'consultas/calendario_consultas.html', {
+        'semanas': semanas,
+        'consultas_por_dia': consultas_por_dia,
+        'mes': mes,
+        'ano': ano,
+        'meses': meses,
+        'hoje': hoje,
+    })

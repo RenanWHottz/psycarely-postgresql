@@ -58,7 +58,6 @@ class Recorrencia(models.Model):
 
 
 class Consulta(models.Model):
-
     vinculo = models.ForeignKey(
         Vinculo,
         on_delete=models.CASCADE,
@@ -81,7 +80,7 @@ class Consulta(models.Model):
     horario = models.TimeField()
     recorrencia = models.ForeignKey(
         Recorrencia,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,  
         null=True, blank=True,
         related_name='consultas_geradas'
     )
@@ -93,4 +92,4 @@ class Consulta(models.Model):
 
     class Meta:
         ordering = ['-data', '-horario']
-        unique_together = ('profissional', 'data', 'horario')  
+        unique_together = ('profissional', 'data', 'horario')

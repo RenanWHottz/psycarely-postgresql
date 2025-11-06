@@ -1,9 +1,23 @@
-<!--templates/consultas/listar_consultas.html-->
 <a href="{% url 'perfil_paciente' vinculo.paciente.id %}">← Voltar ao perfil</a>
 
 <h2>Consultas de {{ vinculo.paciente.get_full_name }}</h2>
 
 <a href="{% url 'marcar_consulta' vinculo.paciente.id %}" class="btn btn-primary mb-3">Marcar Consulta</a>
+
+{% if recorrencia %}
+<div class="alert alert-info">
+  <strong>Recorrência ativa:</strong><br>
+  A cada {{ recorrencia.recorrencia_valor }} {{ recorrencia.get_recorrencia_unidade_display }} – {{ recorrencia.get_dia_semana_display }} às {{ recorrencia.horario_padrao|time:"H:i" }}<br>
+  <a href="{% url 'editar_recorrencia' recorrencia.id %}" class="btn btn-warning btn-sm mt-2">
+    Editar Recorrência
+  </a>
+  <br>
+  <a href="{% url 'excluir_recorrencia' recorrencia.id %}" class="btn btn-danger btn-sm mt-2"
+     onclick="return confirm('Excluir esta recorrência também excluirá todas as consultas associadas. Continuar?')">
+    Excluir Recorrência
+  </a>
+</div>
+{% endif %}
 
 {% if consultas %}
 <table class="table">

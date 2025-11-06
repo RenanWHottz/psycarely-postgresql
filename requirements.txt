@@ -1,6 +1,8 @@
 asgiref==3.10.0
 Django==5.2.7
 mysqlclient==2.2.7
+python-dateutil==2.9.0.post0
 schedule==1.2.2
+six==1.17.0
 sqlparse==0.5.3
 tzdata==2025.2
