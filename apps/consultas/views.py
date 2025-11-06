@@ -10,6 +10,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 from datetime import datetime, timedelta, date
 from dateutil.relativedelta import relativedelta
+from calendar import monthrange
 
 
 @login_required
@@ -128,11 +129,8 @@ def marcar_consulta(request, paciente_id):
                     recorrencia.save()
                 consulta.recorrencia = recorrencia
                 gerar_consultas_recorrentes(recorrencia, consulta.data)
-                print('gerou as consultas')
                 return redirect('listar_consultas', paciente_id=paciente_id)
             else:
-                print('entrou no erro!')
-                print(form.errors)
                 consulta.recorrencia = None
 
             try:
@@ -206,45 +204,44 @@ def dashboard_profissional(request):
 
     return render(request, 'usuarios/dashboard_profissional.html', {'proximas_consultas': proximas})
 
-
-@login_required
-def calendar_events(request):
-    """
-    Endpoint JSON para o FullCalendar.
-    Recebe GET params 'start' e 'end' no formato ISO e retorna eventos no intervalo.
-    """
-    start = request.GET.get('start')
-    end = request.GET.get('end')
-    try:
-        start_date = datetime.fromisoformat(start).date() if start else timezone.localdate()
-        end_date = datetime.fromisoformat(end).date() if end else start_date + timedelta(days=30)
-    except Exception:
-        start_date = timezone.localdate()
-        end_date = start_date + timedelta(days=30)
-
-    eventos = Consulta.objects.filter(
-        profissional=request.user,
-        data__gte=start_date,
-        data__lte=end_date
-    ).order_by('data', 'horario')
-
-    items = []
-    for c in eventos:
-        start_dt = datetime.combine(c.data, c.horario)
-        end_dt = start_dt + timedelta(hours=1)
-        items.append({
-            'id': c.id,
-            'title': f"{c.paciente.get_full_name()}",
-            'start': start_dt.isoformat(),
-            'end': end_dt.isoformat(),
-            'allDay': False,
-            'recorrencia_id': c.recorrencia.id if c.recorrencia else None,
-        })
-
-    return JsonResponse(items, safe=False)
-
-
 @login_required
 def calendario_consultas(request):
-    """Renderiza a página do calendário do profissional."""
-    return render(request, 'consultas/calendario_consultas.html')
+    from calendar import monthrange
+    import calendar
+
+    profissional = request.user
+    hoje = date.today()
+
+    mes = int(request.GET.get('mes', hoje.month))
+    ano = int(request.GET.get('ano', hoje.year))
+
+    primeiro_dia = date(ano, mes, 1)
+    ultimo_dia = date(ano, mes, monthrange(ano, mes)[1])
+
+    consultas = Consulta.objects.filter(
+        profissional=profissional,
+        data__range=[primeiro_dia, ultimo_dia]
+    ).select_related('paciente').order_by('data', 'horario')
+
+    consultas_por_dia = {}
+    for consulta in consultas:
+        dia = consulta.data.day
+        consultas_por_dia.setdefault(dia, []).append(consulta)
+
+    cal = calendar.Calendar(firstweekday=6)
+    semanas = cal.monthdayscalendar(ano, mes)
+
+    meses = [
+        (1, "Janeiro"), (2, "Fevereiro"), (3, "Março"), (4, "Abril"),
+        (5, "Maio"), (6, "Junho"), (7, "Julho"), (8, "Agosto"),
+        (9, "Setembro"), (10, "Outubro"), (11, "Novembro"), (12, "Dezembro")
+    ]
+
+    return render(request, 'consultas/calendario_consultas.html', {
+        'semanas': semanas,
+        'consultas_por_dia': consultas_por_dia,
+        'mes': mes,
+        'ano': ano,
+        'meses': meses,
+        'hoje': hoje,
+    })
