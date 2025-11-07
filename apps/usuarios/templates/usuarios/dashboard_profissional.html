@@ -1,35 +1,65 @@
-<!--/templates/usuarios/dashboard_profissional.html-->
-<h1>Bem-vindo, {{ request.user.first_name }}</h1>
-<a href="{% url 'logout' %}" class="btn btn-danger">Sair</a>
-<p><a href="{% url 'perfil_profissional_usuario' %}">Meu perfil</a></p>
-<hr>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard do Profissional</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
 
-<h3>MENU para LISTAS</h3>
-
-<h2>Pacientes</h2>
-<p><a href="{% url 'lista_pacientes' %}">Ver lista de pacientes</a></p>
-<p><a href="{% url 'enviar_solicitacao' %}">Adicionar paciente (Enviar solicitação)</a></p>
-
-<h2>Próximas Consultas</h2>
-
-{% if proximas_consultas %}
-    <div class="list-group mb-3">
-        {% for consulta in proximas_consultas %}
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                    <strong>{{ consulta.paciente.first_name }} {{ consulta.paciente.last_name }}</strong><br>
-                    {{ consulta.data|date:"d/m/Y" }} às {{ consulta.horario|time:"H:i" }}
-                    {% if consulta.recorrencia %}
-                        <span class="badge bg-info text-dark ms-2">Recorrente</span>
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Bem-vindo, {{ request.user.first_name }}</h1>
+        <div>
+            <a href="{% url 'perfil_profissional_usuario' %}" class="btn btn-outline-secondary me-2">Meu Perfil</a>
+            <a href="{% url 'logout' %}" class="btn btn-danger">Sair</a>
+        </div>
+    </div>
+    <!-- Menu -->
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white fw-bold">
+                    Pacientes
+                </div>
+                <div class="card-body">
+                    <p><a href="{% url 'lista_pacientes' %}" class="btn btn-outline-primary w-100 mb-2">Ver lista de pacientes</a></p>
+                    <p><a href="{% url 'enviar_solicitacao' %}" class="btn btn-outline-success w-100">Adicionar paciente (Enviar solicitação)</a></p>
+                </div>
+            </div>
+        </div>
+        <!--Próximas Consultas-->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-success text-white fw-bold">
+                    Próximas Consultas
+                </div>
+                <div class="card-body">
+                    {% if proximas_consultas %}
+                        <div class="list-group mb-3">
+                            {% for consulta in proximas_consultas %}
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ consulta.paciente.first_name }} {{ consulta.paciente.last_name }}</strong><br>
+                                        {{ consulta.data|date:"d/m/Y" }} às {{ consulta.horario|time:"H:i" }}
+                                        {% if consulta.recorrencia %}
+                                            <span class="badge bg-info text-dark ms-2">Recorrente</span>
+                                        {% endif %}
+                                    </div>
+                                    <a href="{% url 'editar_consulta' consulta.id %}" class="btn btn-sm btn-outline-primary">Ver / Editar</a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <a href="{% url 'calendario_consultas' %}" class="btn btn-success w-100">Ver todas no calendário</a>
+                    {% else %}
+                        <p class="text-muted mb-0">Você não tem consultas marcadas para os próximos dias.</p>
                     {% endif %}
                 </div>
-                <a href="{% url 'editar_consulta' consulta.id %}" class="btn btn-sm btn-outline-primary">Ver / Editar</a>
             </div>
-        {% endfor %}
+        </div>
+
     </div>
-    <a href="{% url 'calendario_consultas' %}" class="btn btn-primary">Ver todas no calendário</a>
-{% else %}
-    <p>Você não tem consultas marcadas para os próximos dias.</p>
-{% endif %}
+</div>
 
-
+</body>
+</html>
