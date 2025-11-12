@@ -1,4 +1,4 @@
-<!-- templates/registros/registrar_humor.html -->
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -7,82 +7,134 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
+        body {
+            background-image: url("{% static 'img/fundo_dashboard.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .content-wrapper {
+            background-color: rgba(255, 255, 255, 0.92);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 650px;
+        }
+
+        h2 {
+            color: #19588a;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
         .emoji-btn {
             font-size: 1.8rem;
-            margin: 8px;
+            margin: 6px;
             padding: 10px 20px;
             border-radius: 10px;
             border: 2px solid transparent;
             background-color: #f8f9fa;
-            transition: all 0.2s;
+            transition: all 0.2s ease-in-out;
         }
+
         .emoji-btn:hover {
             background-color: #e9ecef;
         }
+
         .emoji-btn.active {
-            background-color: #0d6efd;
+            background-color: #0071bc;
             color: white;
-            border-color: #0a58ca;
+            border-color: #005a99;
+        }
+
+        .btn-success {
+            background-color: #19588a;
+            border: none;
+            color: white;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .btn-success:hover {
+            background-color: #12466f;
+        }
+
+        .btn-secondary {
+            background-color: #0071bc;
+            color: white;
+            border: none;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background-color: #005a99;
         }
     </style>
 </head>
-<body class="bg-light p-4">
-<div class="container">
-    <h2 class="mb-4 text-center">Como você está se sentindo agora?</h2>
+<body>
+    <div class="content-wrapper">
+        <h2 class="text-center">Como você está se sentindo agora?</h2>
 
-    <form method="post">
-        {% csrf_token %}
+        <form method="post">
+            {% csrf_token %}
 
-        <div class="mb-3">
-            <label class="form-label"><strong>Data e hora</strong></label>
-            {{ form.data_humor }}
-        </div>
-        <div class="form-text text-muted">
-            Atenção: não será possível registrar um humor com data/hora futura.
-        </div>
-
-        <div class="mb-3 text-center">
-            <label class="form-label d-block"><strong>Escolha seu humor</strong></label>
-
-            <div id="emocao-buttons">
-                <button type="button" class="emoji-btn" data-value="feliz">😄 Feliz</button>
-                <button type="button" class="emoji-btn" data-value="triste">😢 Triste</button>
-                <button type="button" class="emoji-btn" data-value="ansioso">😰 Ansioso(a)</button>
-                <button type="button" class="emoji-btn" data-value="tranquilo">😌 Tranquilo(a)</button>
-                <button type="button" class="emoji-btn" data-value="irritado">😠 Irritado(a)</button>
-                <button type="button" class="emoji-btn" data-value="desanimado">😞 Desanimado(a)</button>
-                <button type="button" class="emoji-btn" data-value="esperancoso">😊 Esperançoso(a)</button>
+            <div class="mb-3">
+                <label class="form-label"><strong>Data e hora</strong></label>
+                {{ form.data_humor }}
+                <div class="form-text text-muted">
+                    Atenção: não será possível registrar um humor com data/hora futura.
+                </div>
             </div>
 
-            <input type="hidden" name="emocao" id="id_emocao">
-        </div>
+            <div class="mb-3 text-center">
+                <label class="form-label d-block"><strong>Escolha seu humor</strong></label>
 
-        <div class="text-center mt-4">
-            <button type="submit" class="btn btn-success px-4">Registrar</button>
-            <a href="{% url 'tarefas_paciente' %}" class="btn btn-secondary px-4">Cancelar</a>
-        </div>
-    </form>
-</div>
+                <div id="emocao-buttons">
+                    <button type="button" class="emoji-btn" data-value="feliz">😄 Feliz</button>
+                    <button type="button" class="emoji-btn" data-value="triste">😢 Triste</button>
+                    <button type="button" class="emoji-btn" data-value="ansioso">😰 Ansioso(a)</button>
+                    <button type="button" class="emoji-btn" data-value="tranquilo">😌 Tranquilo(a)</button>
+                    <button type="button" class="emoji-btn" data-value="irritado">😠 Irritado(a)</button>
+                    <button type="button" class="emoji-btn" data-value="desanimado">😞 Desanimado(a)</button>
+                    <button type="button" class="emoji-btn" data-value="esperancoso">😊 Esperançoso(a)</button>
+                </div>
 
-<script>
-    const buttons = document.querySelectorAll('.emoji-btn');
-    const inputEmocao = document.getElementById('id_emocao');
+                <input type="hidden" name="emocao" id="id_emocao">
+            </div>
 
-    buttons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            buttons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            inputEmocao.value = btn.getAttribute('data-value');
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success px-4 me-2">Registrar</button>
+                <a href="{% url 'tarefas_paciente' %}" class="btn btn-secondary px-4">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const buttons = document.querySelectorAll('.emoji-btn');
+        const inputEmocao = document.getElementById('id_emocao');
+
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                inputEmocao.value = btn.getAttribute('data-value');
+            });
         });
-    });
 
-    document.querySelector('form').addEventListener('submit', e => {
-        if (!inputEmocao.value) {
-            e.preventDefault();
-            alert('Por favor, selecione uma emoção antes de registrar.');
-        }
-    });
-</script>
-
+        document.querySelector('form').addEventListener('submit', e => {
+            if (!inputEmocao.value) {
+                e.preventDefault();
+                alert('Por favor, selecione uma emoção antes de registrar.');
+            }
+        });
+    </script>
 </body>
 </html>

@@ -1,0 +1,131 @@
+:root {
+    --verde-claro: #4db6ac;
+    --verde-escuro: #3a9e95;
+    --azul-claro: #64b5f6;
+    --azul-escuro: #4a90e2;
+    --amarelo-suave: #ffd54f;
+    --amarelo-escuro: #e0b800;
+    --texto-principal: #1f2a44;
+}
+
+/* ===== FUNDO GERAL ===== */
+body {
+    background-image: url("../img/fundo_nome.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    color: var(--texto-principal);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 3rem;
+}
+
+/* ===== ÁREA CENTRAL OPACA ===== */
+.overlay-container {
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    max-width: 1000px;
+    width: 90%;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== TÍTULO ===== */
+h1 {
+    font-weight: 900;
+    color: var(--texto-principal);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+/* ===== CARDS ===== */
+.card {
+    border-radius: 16px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(25, 88, 138, 0.1);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    border: none;
+    color: #fff;
+    font-size: 1.1rem;
+}
+
+/* ===== CORES ===== */
+.bg-warning {
+    background-color: var(--amarelo-suave) !important;
+    color: #5d4b00 !important;
+}
+.bg-primary {
+    background-color: var(--azul-claro) !important;
+}
+
+/* ===== BOTÕES ===== */
+.btn {
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    color: #fff !important;
+}
+
+/* Botões principais */
+.btn-primary {
+    background-color: var(--amarelo-suave);
+    border: none;
+}
+.btn-primary:hover {
+    background-color: var(--amarelo-escuro);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border: none;
+}
+.btn-secondary:hover {
+    background-color: #545b62;
+}
+
+.btn-success {
+    background-color: var(--azul-claro);
+    border: none;
+}
+.btn-success:hover {
+    background-color: var(--azul-escuro);
+}
+
+.btn-info {
+    background-color: var(--verde-claro);
+    border: none;
+}
+.btn-info:hover {
+    background-color: var(--verde-escuro);
+}
+
+/* ===== RESPONSIVO ===== */
+@media (max-width: 768px) {
+    .row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .col-md-5 {
+        width: 100%;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+    }
+
+    .overlay-container {
+        padding: 2rem 1.5rem;
+    }
+}

@@ -1,40 +1,105 @@
-<!--templates/registros/listar_humores_profissional.html-->
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <title>Histórico de Humor do Paciente</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light p-4">
-<div class="text-right mt-3">
-        <a href="{% url 'perfil_paciente' paciente.id %}" class="btn btn-secondary">Voltar ao Perfil do Paciente</a>
-</div>
-<div class="container">
-    <h1 class="mb-4 text-center">Histórico de Humor de {{ paciente.get_full_name }}</h1>
 
-    {% if humores %}
-        <table class="table table-bordered text-center align-middle">
-            <thead class="table-primary">
-                <tr>
-                    <th>Data</th>
-                    <th>Emoção</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for humor in humores %}
-                    <tr>
-                        <td>{{ humor.data_humor|date:"d/m/Y H:i" }}</td>
-                        <td>{{ humor.get_emocao_display }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <div class="alert alert-warning text-center">
-            Nenhum registro de humor encontrado para este paciente.
+    <style>
+        body {
+            background-image: url("{% static 'img/fundo_dashboard.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .content-wrapper {
+            background-color: rgba(255, 255, 255, 0.92);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+        }
+
+        h1 {
+            color: #19588a;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            margin-top: 2.5rem; /* novo: empurra o título mais para baixo */
+        }
+
+        table {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        thead {
+            background-color: #0071bc;
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #0071bc;
+            color: white;
+            border: none;
+            font-weight: 500;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .btn-secondary:hover {
+            background-color: #005a99;
+        }
+
+        .alert {
+            border-radius: 10px;
+        }
+
+        .top-right {
+            position: absolute;
+            top: 15px; 
+            right: 35px;
+        }
+    </style>
+</head>
+<body>
+    <div class="content-wrapper">
+        <div class="top-right">
+            <a href="{% url 'perfil_paciente' paciente.id %}" class="btn btn-secondary">Voltar ao Perfil do Paciente</a>
         </div>
-    {% endif %}
-</div>
+
+        <h1 class="text-center">Histórico de Humor de {{ paciente.get_full_name }}</h1>
+
+        {% if humores %}
+            <table class="table table-bordered text-center align-middle shadow-sm">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Emoção</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for humor in humores %}
+                        <tr>
+                            <td>{{ humor.data_humor|date:"d/m/Y H:i" }}</td>
+                            <td>{{ humor.get_emocao_display }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="alert alert-warning text-center mt-4">
+                Nenhum registro de humor encontrado para este paciente.
+            </div>
+        {% endif %}
+    </div>
 </body>
 </html>

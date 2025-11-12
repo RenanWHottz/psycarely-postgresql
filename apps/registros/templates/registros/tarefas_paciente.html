@@ -1,11 +1,53 @@
-<!--templates/registros;tarefas_paciente.html-->
-<a href="{% url 'dashboard_paciente' %}">← Voltar ao Dashboard</a>
-<hr>
-<h1>Tarefas de Casa</h1>
-<a href="{% url 'novo_rpd' %}" class="btn btn-primary">Fazer novo RPD</a>
-<br>
-<a href="{% url 'listar_rpds' %}" class="btn btn-outline-secondary">Ver RPDs anteriores</a>
-<br>
-<a href="{% url 'registrar_humor' %}" class="btn btn-primary">Registrar Humor</a>
-<br>
-<a href="{% url 'listar_humores' %}" class="btn btn-outline-primary">Ver meus humores</a>
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Tarefas de Casa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/registros_paciente.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="overlay-container py-5">
+        <div class="text-center mb-4">
+            <a href="{% url 'dashboard_paciente' %}" class="btn btn-secondary mb-3">Voltar ao Menu Principal</a>
+            <h1 class="fw-bold">Tarefas de Casa</h1>
+            <hr class="w-25 mx-auto">
+        </div>
+
+        <div class="row justify-content-center g-4">
+            <!-- ===== CARD RPD ===== -->
+            <div class="col-md-5">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-warning text-center fw-bold fs-5">
+                        🧠 Registro de Pensamentos Disfuncionais (RPD)
+                    </div>
+                    <div class="card-body text-center">
+                        <p class="text-muted mb-4">
+                            Registre e acompanhe seus pensamentos automáticos e emoções relacionadas.
+                        </p>
+                        <a href="{% url 'novo_rpd' %}" class="btn btn-primary w-100 mb-2">✏️ Fazer novo RPD</a>
+                        <a href="{% url 'listar_rpds' %}" class="btn btn-secondary w-100">📘 Ver RPDs anteriores</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== CARD REGISTRO DE HUMOR ===== -->
+            <div class="col-md-5">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-center fw-bold fs-5 text-white">
+                        😊 Registro de Humor
+                    </div>
+                    <div class="card-body text-center">
+                        <p class="text-muted mb-4">
+                            Monitore como você tem se sentido ao longo dos dias.
+                        </p>
+                        <a href="{% url 'registrar_humor' %}" class="btn btn-success w-100 mb-2">😊 Registrar Humor</a>
+                        <a href="{% url 'listar_humores' %}" class="btn btn-info w-100">📊 Ver meus humores</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
