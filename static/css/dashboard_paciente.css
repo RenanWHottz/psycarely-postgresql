@@ -1,0 +1,141 @@
+/* Dashboard Paciente*/
+/* Cores base */
+:root {
+    --verde-claro: #4db6ac;     /* Próximas Sessões */
+    --verde-escuro: #3a9e95;    /* Hover do verde */
+    --azul-claro: #64b5f6;      /* Registro de Humor */
+    --azul-escuro: #4a90e2;     /* Hover do azul */
+    --amarelo-suave: #ffd54f;   /* Tarefas de Casa */
+    --amarelo-escuro: #e0b800;  /* Hover do amarelo */
+    --roxo-suave: #7a6ff0;      /* Profissional Vinculado */
+    --roxo-escuro: #5c52cc;     /* Hover do roxo */
+    --texto-principal: #1f2a44;
+}
+
+body {
+    background-image: url("../img/fundo_nome.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    color: var(--texto-principal);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 3rem;
+}
+
+/* Fundo translúcido dos cards */
+.card {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Cabeçalhos com cores específicas */
+.card-header.bg-success {
+    background-color: var(--verde-claro) !important;
+}
+
+.card-header.bg-primary {
+    background-color: var(--azul-claro) !important;
+}
+
+.card-header.bg-warning {
+    background-color: var(--amarelo-suave) !important;
+    color: #5d4b00 !important;
+}
+
+.card-header.bg-secondary {
+    background-color: var(--roxo-suave) !important;
+}
+
+/* ==== BOTÕES DOS CARDS (texto branco padronizado) ==== */
+.card-body .btn {
+    color: white !important;
+    font-weight: 600;
+    border: none !important;
+}
+
+/* Botões por card */
+.card-header.bg-success + .card-body .btn {
+    background-color: var(--verde-claro);
+}
+.card-header.bg-success + .card-body .btn:hover {
+    background-color: var(--verde-escuro);
+}
+
+.card-header.bg-primary + .card-body .btn {
+    background-color: var(--azul-claro);
+}
+.card-header.bg-primary + .card-body .btn:hover {
+    background-color: var(--azul-escuro);
+}
+
+.card-header.bg-warning + .card-body .btn {
+    background-color: var(--amarelo-suave);
+    color: white !important; /* agora branco também */
+}
+.card-header.bg-warning + .card-body .btn:hover {
+    background-color: var(--amarelo-escuro);
+    color: white !important;
+}
+
+.card-header.bg-secondary + .card-body .btn {
+    background-color: var(--roxo-suave);
+}
+.card-header.bg-secondary + .card-body .btn:hover {
+    background-color: var(--roxo-escuro);
+}
+
+/* Botão de sair (vermelho padrão Bootstrap) */
+.btn-danger {
+    background-color: #dc3545 !important;
+    border: none !important;
+}
+.btn-danger:hover {
+    background-color: #c82333 !important;
+}
+
+/* Botão de desconectar (mantém vermelho) */
+.btn-outline-danger,
+.btn-outline-danger:hover {
+    background-color: #d9534f !important;
+    color: white !important;
+    border: none !important;
+}
+
+/* Cabeçalho da página */
+h1 {
+    color: var(--texto-principal);
+    font-weight: 900;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 1rem;
+    }
+    .card {
+        margin-bottom: 1.5rem;
+    }
+    h1 {
+        font-size: 1.4rem;
+    }
+}
+
+/* Destaque do título principal (Bem-vindo) */
+h1.h3 {
+    right: 10px;
+    font-size: 2.8rem !important; /* aumenta o tamanho */
+    font-weight: 900;
+    color: #000; /* preto forte */
+    letter-spacing: 1px;
+}

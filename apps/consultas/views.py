@@ -245,3 +245,59 @@ def calendario_consultas(request):
         'meses': meses,
         'hoje': hoje,
     })
+
+@login_required
+def dashboard_paciente(request):
+    """Exibe o dashboard do paciente com as 4 próximas consultas futuras."""
+    hoje = timezone.localdate()
+
+    proximas_consultas = (
+        Consulta.objects.filter(
+            paciente=request.user,
+            data__gte=hoje  
+        )
+        .order_by('data', 'horario')[:4]  
+    )
+
+    return render(request, 'usuarios/dashboard_paciente.html', {
+        'proximas_consultas': proximas_consultas
+    })
+
+@login_required
+def calendario_paciente(request):
+    import calendar
+    hoje = date.today()
+
+    mes = int(request.GET.get('mes', hoje.month))
+    ano = int(request.GET.get('ano', hoje.year))
+
+    primeiro_dia = date(ano, mes, 1)
+    ultimo_dia = date(ano, mes, monthrange(ano, mes)[1])
+
+    consultas = Consulta.objects.filter(
+        paciente=request.user,
+        data__range=[primeiro_dia, ultimo_dia]
+    ).select_related('profissional').order_by('data', 'horario')
+
+    consultas_por_dia = {}
+    for consulta in consultas:
+        dia = consulta.data.day
+        consultas_por_dia.setdefault(dia, []).append(consulta)
+
+    cal = calendar.Calendar(firstweekday=6)
+    semanas = cal.monthdayscalendar(ano, mes)
+
+    meses = [
+        (1, "Janeiro"), (2, "Fevereiro"), (3, "Março"), (4, "Abril"),
+        (5, "Maio"), (6, "Junho"), (7, "Julho"), (8, "Agosto"),
+        (9, "Setembro"), (10, "Outubro"), (11, "Novembro"), (12, "Dezembro")
+    ]
+
+    return render(request, 'consultas/calendario_paciente.html', {
+        'semanas': semanas,
+        'consultas_por_dia': consultas_por_dia,
+        'mes': mes,
+        'ano': ano,
+        'meses': meses,
+        'hoje': hoje,
+    })

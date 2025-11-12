@@ -1,29 +1,109 @@
-<!-- /templates/usuarios/dashboard_paciente.html -->
-<h1>Bem-vindo, {{ request.user.first_name }}</h1>
-<a href="{% url 'logout' %}" class="btn btn-danger">Sair</a>
-<a href="{% url 'perfil_paciente_usuario' %}" class="btn btn-primary">Meu Perfil</a>
-<hr>
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard do Paciente</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet"> 
+    <link href="{% static 'css/dashboard_paciente.css' %}" rel="stylesheet">
+</head>
 
+<body class="bg-light">
 
-<h2>Consultas</h2>
-<p>Suas próximas consultas aparecerão aqui.</p>
+<div class="container py-5">
+    <!-- Cabeçalho -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-dark">Bem-vindo, {{ request.user.first_name }}</h1>
+        <div>
+            <a href="{% url 'perfil_paciente_usuario' %}" class="btn btn-secondary me-2">Meu Perfil</a>
+            <a href="{% url 'logout' %}" class="btn btn-danger">Sair</a>
+        </div>
+    </div>
 
-<h2>Registro de Humor</h2>
-<a href="{% url 'registrar_humor' %}" class="btn btn-primary">Registrar Humor</a>
+    <!-- Seções principais -->
+    <div class="row g-4">
 
-<h2>Tarefas de Casa</h2>
-<a href="{% url 'tarefas_paciente' %}" class="btn btn-secondary">Acessar Tarefas de Casa</a>
+        <!-- Próximas Sessões -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-success text-white fw-bold">
+                    Próximas Sessões
+                </div>
+                <div class="card-body">
+                    {% if proximas_consultas %}
+                        <div class="list-group mb-3">
+                            {% for consulta in proximas_consultas %}
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ consulta.profissional.first_name }} {{ consulta.profissional.last_name }}</strong><br>
+                                        {{ consulta.data|date:"d/m/Y" }} às {{ consulta.horario|time:"H:i" }}
+                                        {% if consulta.recorrencia %}
+                                            <span class="badge bg-info text-dark ms-2">Recorrente</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <a href="{% url 'calendario_paciente' %}" class="btn w-100">Ver todas no calendário</a>
+                    {% else %}
+                        <p class="text-muted mb-0">Você não tem sessões marcadas para os próximos dias.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 
+        <!-- Registro de Humor -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white fw-bold">
+                    Registro de Humor
+                </div>
+                <div class="card-body">
+                    <p>Monitore seu estado emocional regularmente.</p>
+                    <a href="{% url 'registrar_humor' %}" class="btn w-100">Registrar Humor</a>
+                </div>
+            </div>
+        </div>
 
-<h2>Profissional Conectado</h2>
-{% if request.user.vinculo and request.user.vinculo.ativo %}
-    <p>{{ request.user.vinculo.profissional.get_full_name }} (CRP: {{ request.user.vinculo.profissional.crp }})</p>
-    <form action="{% url 'desconectar_profissional' %}" method="post" style="display:inline;">
-        {% csrf_token %}
-        <button type="submit" onclick="return confirm('Tem certeza que deseja se desconectar do profissional?')">Desconectar</button>
-    </form>
-{% else %}
-    <p>Nenhum profissional conectado ainda.</p>
-{% endif %}
-<p><a href="{% url 'lista_solicitacoes' %}">Ver solicitações de conexão</a></p>
+        <!-- Tarefas de Casa -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-warning fw-bold">
+                    Tarefas de Casa
+                </div>
+                <div class="card-body">
+                    <p>Visualize as tarefas recomendadas pelo seu terapeuta.</p>
+                    <a href="{% url 'tarefas_paciente' %}" class="btn w-100">Acessar Tarefas</a>
+                </div>
+            </div>
+        </div>
 
+        <!-- Profissional Vinculado -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-secondary text-white fw-bold">
+                    Profissional Vinculado
+                </div>
+                <div class="card-body">
+                    {% if request.user.vinculo and request.user.vinculo.ativo %}
+                        <p><strong>{{ request.user.vinculo.profissional.get_full_name }}</strong><br>
+                        CRP: {{ request.user.vinculo.profissional.crp }}</p>
+                        <form action="{% url 'desconectar_profissional' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger w-100"
+                                    onclick="return confirm('Deseja se desconectar do profissional?')">Desconectar</button>
+                        </form>
+                    {% else %}
+                        <p class="text-muted mb-2">Nenhum profissional conectado ainda.</p>
+                        <a href="{% url 'lista_solicitacoes' %}" class="btn w-100">Ver solicitações</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

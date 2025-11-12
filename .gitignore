@@ -16,8 +16,9 @@ env/
 db.sqlite3
 media/
 staticfiles/
+
 # Se você estiver coletando arquivos estáticos
-static/
+#static/
 
 # Configurações locais
 *.env

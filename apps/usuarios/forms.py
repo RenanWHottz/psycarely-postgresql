@@ -13,7 +13,8 @@ class CadastroForm(UserCreationForm):
     tipo = forms.ChoiceField(
         choices=[('profissional', 'Profissional'), ('paciente', 'Paciente')],
         widget=forms.RadioSelect,
-        label="Tipo de usuário"
+        label="Tipo de usuário",
+        initial='paciente'  
     )
     cpf = forms.CharField(label="CPF", required=True)
     crp = forms.CharField(label="CRP", required=False)

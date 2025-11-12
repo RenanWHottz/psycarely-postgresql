@@ -10,4 +10,6 @@ urlpatterns = [
     path('recorrencia/<int:recorrencia_id>/excluir/', views.excluir_recorrencia, name='excluir_recorrencia'),
     path('dashboard/', views.dashboard_profissional, name='dashboard_profissional'),
     path('calendario/', views.calendario_consultas, name='calendario_consultas'),
+    path('dashboard_paciente/', views.dashboard_paciente, name='dashboard_paciente'),
+    path('calendario_paciente/', views.calendario_paciente, name='calendario_paciente'),
 ]

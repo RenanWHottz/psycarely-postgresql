@@ -1,19 +1,82 @@
-<h2>Cadastro</h2>
-<form method="POST">
-  {% csrf_token %}
-  {{ form.non_field_errors }}
-  {% for field in form %}
-    <p>
-      {{ field.label_tag }}<br>
-      {{ field }}
-      {% if field.help_text %}
-        <small>{{ field.help_text }}</small>
-      {% endif %}
-      {% for error in field.errors %}
-        <strong style="color:red">{{ error }}</strong>
-      {% endfor %}
-    </p>
-  {% endfor %}
-  <button type="submit">Cadastrar</button>
-</form>
-<a href="{% url 'login' %}">Voltar para Login</a>
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro</title>
+    <link href="{% static 'css/auth.css' %}" rel="stylesheet">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const tipoRadios = document.querySelectorAll('input[name="tipo"]');
+            const crpFieldWrapper = document.querySelector('p:has([name="crp"])');
+
+            function toggleCRP() {
+                if (!crpFieldWrapper) return;
+
+                // Verifica qual botão de tipo está selecionado
+                const tipoSelecionado = document.querySelector('input[name="tipo"]:checked');
+                if (tipoSelecionado && tipoSelecionado.value === "profissional") {
+                    crpFieldWrapper.style.display = "block";
+                } else {
+                    crpFieldWrapper.style.display = "none";
+                }
+            }
+
+            // Inicializa ao carregar
+            toggleCRP();
+
+            // Adiciona listeners para quando o usuário troca o tipo
+            tipoRadios.forEach(radio => {
+                radio.addEventListener("change", toggleCRP);
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="auth-container">
+        <h2>Cadastro</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            
+            <!-- Campo tipo como PRIMEIRO campo -->
+            <div class="radio-group">
+                <label>{{ form.tipo.label }}</label><br>
+                <div class="radio-options">
+                    {% for radio in form.tipo %}
+                        <div class="radio-option">
+                            {{ radio.tag }}
+                            <label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if form.tipo.help_text %}
+                    <small>{{ form.tipo.help_text }}</small>
+                {% endif %}
+                {% for error in form.tipo.errors %}
+                    <strong style="color:red">{{ error }}</strong>
+                {% endfor %}
+            </div>
+
+            <!-- Demais campos (excluindo o tipo) -->
+            {% for field in form %}
+                {% if field.name != 'tipo' %}
+                    <p>
+                        {{ field.label_tag }}<br>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small>{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <strong style="color:red">{{ error }}</strong>
+                        {% endfor %}
+                    </p>
+                {% endif %}
+            {% endfor %}
+            
+            <button type="submit">Cadastrar</button>
+        </form>
+        <p>Já tem conta? <a href="{% url 'login' %}">Fazer Login</a></p>
+    </div>
+</body>
+</html>

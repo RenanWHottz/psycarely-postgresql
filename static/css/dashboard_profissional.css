@@ -1,0 +1,175 @@
+/* ================================
+   CORES BASE
+=================================== */
+:root {
+    --verde-claro: #4db6ac;     /* Pacientes */
+    --verde-escuro: #3a9e95;
+
+    --azul-claro: #64b5f6;      /* Próximas Consultas */
+    --azul-escuro: #4a90e2;
+
+    --amarelo-suave: #ffd54f;   /* Gerenciar Consultas */
+    --amarelo-escuro: #e0b800;
+
+    --roxo-suave: #7a6ff0;      /* Notificações */
+    --roxo-escuro: #5c52cc;
+
+    --cinza-suave: #6c757d;     /* Meu Perfil */
+    --cinza-escuro: #565e64;
+
+    --texto-principal: #1f2a44;
+    --fundo-bege: #fff8da;
+}
+
+/* ================================
+   PLANO DE FUNDO
+=================================== */
+body {
+    background-color: var(--fundo-bege);
+    color: var(--texto-principal);
+}
+
+.background-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('../images/bg_profissional.jpg') no-repeat center center fixed;
+    background-size: cover;
+    opacity: 0.12;
+    z-index: -1;
+}
+
+/* ================================
+   ESTILO DOS CARDS
+=================================== */
+.card {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* ================================
+   CABEÇALHOS COM CORES
+=================================== */
+.card-header.bg-pacientes {
+    background-color: var(--verde-claro) !important;
+}
+.card-header.bg-consultas {
+    background-color: var(--azul-claro) !important;
+}
+.card-header.bg-gerenciar {
+    background-color: var(--amarelo-suave) !important;
+    color: #5d4b00 !important;
+}
+.card-header.bg-relatorios {
+    background-color: var(--roxo-suave) !important;
+}
+
+/* ================================
+   BOTÕES PADRÃO
+=================================== */
+.btn {
+    border-radius: 8px !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    font-weight: 500;
+    transition: background-color 0.25s ease, color 0.25s ease, transform 0.15s ease;
+}
+
+.btn:hover {
+    transform: scale(1.02);
+}
+
+/* ================================
+   BOTÕES POR CARD
+=================================== */
+.card-header.bg-pacientes + .card-body .btn {
+    background-color: var(--verde-claro);
+    color: white !important;
+}
+.card-header.bg-pacientes + .card-body .btn:hover {
+    background-color: var(--verde-escuro);
+}
+
+.card-header.bg-consultas + .card-body .btn {
+    background-color: var(--azul-claro);
+    color: white !important;
+}
+.card-header.bg-consultas + .card-body .btn:hover {
+    background-color: var(--azul-escuro);
+}
+
+.card-header.bg-gerenciar + .card-body .btn {
+    background-color: var(--amarelo-suave);
+    color: #5d4b00 !important;
+}
+.card-header.bg-gerenciar + .card-body .btn:hover {
+    background-color: var(--amarelo-escuro);
+    color: white !important;
+}
+
+.card-header.bg-relatorios + .card-body .btn {
+    background-color: var(--roxo-suave);
+    color: white !important;
+}
+.card-header.bg-relatorios + .card-body .btn:hover {
+    background-color: var(--roxo-escuro);
+}
+
+/* ================================
+   BOTÕES DE CABEÇALHO
+=================================== */
+.btn-outline-secondary {
+    background-color: var(--cinza-suave);
+    color: white !important;
+    border: 1px solid var(--cinza-escuro) !important;
+}
+.btn-outline-secondary:hover {
+    background-color: var(--cinza-escuro) !important;
+}
+
+.btn-danger {
+    background-color: #dc3545 !important;
+    border: 1px solid #c82333 !important;
+    color: white !important;
+}
+.btn-danger:hover {
+    background-color: #c82333 !important;
+}
+
+/* ================================
+   CABEÇALHO
+=================================== */
+h1 {
+    color: var(--texto-principal);
+    font-weight: 900;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+/* ================================
+   RESPONSIVIDADE
+=================================== */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1.5rem;
+    }
+    h1 {
+        font-size: 1.4rem;
+    }
+}
+
+/* Destaque do título principal (Bem-vindo) */
+h1.h3 {
+    right: 10px;
+    font-size: 2.8rem !important; /* aumenta o tamanho */
+    font-weight: 900;
+    color: #000; /* preto forte */
+    letter-spacing: 1px;
+}

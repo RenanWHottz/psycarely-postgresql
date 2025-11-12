@@ -1,0 +1,70 @@
+body {
+    background-color: #fff8da;
+    background-image: url("../img/fundo_nome.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;       /* cobre a tela sem distorcer */
+    background-attachment: fixed; /* faz o fundo rolar suavemente */
+    background-position: center;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: #19588a;
+}
+
+/* Cartões e botões */
+.card {
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 12px rgba(25, 88, 138, 0.1);
+}
+
+.card-header {
+    border-bottom: none;
+}
+
+.btn-primary {
+    background-color: #19588a;
+    border-color: #19588a;
+}
+.btn-primary:hover {
+    background-color: #0071bc;
+    border-color: #0071bc;
+}
+
+.btn-outline-primary {
+    color: #19588a;
+    border-color: #19588a;
+}
+.btn-outline-primary:hover {
+    background-color: #19588a;
+    color: #fff;
+}
+
+.btn-success {
+    background-color: #0071bc;
+    border-color: #0071bc;
+}
+.btn-success:hover {
+    background-color: #246693;
+    border-color: #246693;
+}
+
+a {
+    color: #246693;
+}
+a:hover {
+    color: #0071bc;
+}
+
+/* Ajustes no texto dos títulos */
+h1, h2, h3, .fw-bold {
+    color: #19588a;
+}
+
+/* Suaviza o layout */
+.container {
+    backdrop-filter: blur(8px);
+}
+
+/* Fundo leve para áreas internas */
+.bg-light {
+    background-color: rgba(255, 255, 255, 0.7) !important;
+}

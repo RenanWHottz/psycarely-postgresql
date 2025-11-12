@@ -1,0 +1,126 @@
+/* Auth (Login e Cadastro) */
+
+/* Paleta principal baseada no dashboard */
+:root {
+    --verde-claro: #4db6ac;
+    --verde-escuro: #3a9e95;
+    --texto-principal: #1f2a44;
+    --fundo: #fff8da;
+}
+
+/* Corpo com o mesmo fundo e leve translúcido */
+body {
+    background-image: url("../img/fundo_nome.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    color: var(--texto-principal);
+}
+
+/* Container central */
+.auth-container {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 420px;
+}
+
+/* Título */
+.auth-container h2 {
+    text-align: center;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    color: var(--texto-principal);
+}
+
+/* Campos do formulário */
+form p {
+    margin-bottom: 1rem;
+}
+
+form label {
+    font-weight: 600;
+    color: var(--texto-principal);
+}
+
+form input {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-top: 0.3rem;
+}
+
+/* Botões */
+button[type="submit"] {
+    background-color: var(--verde-claro);
+    color: white;
+    border: none;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    width: 100%;
+    margin-top: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: var(--verde-escuro);
+}
+
+/* Links */
+a {
+    color: var(--verde-escuro);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Mensagens pequenas (help_text, etc.) */
+small {
+    color: #555;
+}
+
+/* Centraliza o link final (ex: “Não tem conta?”) */
+p:last-child {
+    text-align: center;
+    margin-top: 1.2rem;
+}
+
+/* Estilos para os radio buttons */
+.radio-group {
+    margin-bottom: 1rem;
+}
+
+.radio-options {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.radio-option input[type="radio"] {
+    width: auto;
+    margin: 0;
+}
+
+.radio-option label {
+    margin: 0;
+    font-weight: normal;
+}

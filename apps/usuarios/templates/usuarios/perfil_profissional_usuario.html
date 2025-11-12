@@ -1,10 +1,14 @@
 <!-- /templates/usuarios/perfil_paciente_usuario.html -->
-<h1>Meu Perfil</h1>
-<a href="{% url 'dashboard_profissional' %}">← Voltar ao Dashboard</a>
-<hr>
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/perfil.css' %}">
+<div class="perfil-container">
+    <h1>Meu Perfil</h1>
+    <a href="{% url 'dashboard_profissional' %}">← Voltar ao Dashboard</a>
+    <hr>
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Salvar Alterações</button>
-</form>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Salvar Alterações</button>
+    </form>
+</div>

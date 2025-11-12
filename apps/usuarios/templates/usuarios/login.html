@@ -1,7 +1,20 @@
-<h2>Login</h2>
-<form method="POST">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Entrar</button>
-</form>
-<p>Não tem conta? <a href="{% url 'cadastro' %}">Cadastrar</a></p>
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link href="{% static 'css/auth.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-container">
+        <h2>Login</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Entrar</button>
+        </form>
+        <p>Não tem conta? <a href="{% url 'cadastro' %}">Cadastrar</a></p>
+    </div>
+</body>
+</html>
