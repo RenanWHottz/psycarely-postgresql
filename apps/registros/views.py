@@ -160,7 +160,7 @@ def nova_anotacao_consulta(request, paciente_id):
             anotacao.save()
             return redirect('listar_anotacoes_paciente', paciente_id=paciente.id)
     else:
-        form = AnotacaoConsultaForm()
+        form = AnotacaoConsultaForm(initial={'data_consulta': timezone.localdate()})
 
     return render(request, 'registros/nova_anotacao_consulta.html', {
         'form': form,

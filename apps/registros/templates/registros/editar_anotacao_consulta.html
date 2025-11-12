@@ -57,7 +57,7 @@
         }
 
         textarea.form-control {
-            min-height: 400px !important; /* Campo grande para digitar */
+            min-height: 400px !important;
             resize: vertical;
         }
 
@@ -105,7 +105,7 @@
         </div>
 
         <h2>Anotação de Consulta - {{ paciente.get_full_name }}</h2>
-        <p class="text-muted">Data da consulta: {{ anotacao.data_consulta|date:"d/m/Y" }}</p>
+        <!-- <p class="text-muted">Data da consulta: {{ anotacao.data_consulta|date:"d/m/Y" }}</p> -->
 
         <form method="POST">
             {% csrf_token %}
@@ -115,7 +115,7 @@
                        name="data_consulta" 
                        id="id_data_consulta" 
                        class="form-control" 
-                       value="{{ form.data_consulta.value|default_if_none:anotacao.data_consulta }}" 
+                       value="{{ form.data_consulta.value|default:anotacao.data_consulta|date:'Y-m-d' }}"
                        {% if somente_leitura %}readonly{% endif %}>
             </div>
 
@@ -124,7 +124,7 @@
                 <textarea name="conteudo"
                           id="id_conteudo"
                           class="form-control"
-                          {% if somente_leitura %}readonly{% endif %}>{{ form.conteudo.value|default_if_none:anotacao.conteudo }}</textarea>
+                          {% if somente_leitura %}readonly{% endif %}>{{ form.conteudo.value|default:anotacao.conteudo }}</textarea>
             </div>
 
             {% if not somente_leitura %}

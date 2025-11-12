@@ -77,6 +77,13 @@ class AnotacaoConsultaForm(forms.ModelForm):
             }),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.data.get('data_consulta') and not self.initial.get('data_consulta'):
+            hoje = timezone.localdate().strftime("%Y-%m-%d")
+            self.initial['data_consulta'] = hoje
+            self.fields['data_consulta'].widget.attrs['value'] = hoje
+
     def clean_data_consulta(self):
         data = self.cleaned_data['data_consulta']
         if data > timezone.localdate():

@@ -104,6 +104,11 @@
         th, td {
             vertical-align: middle !important;
         }
+
+        /* garante que a célula de conteúdo fique oculta mas disponível para JS */
+        .conteudo-cell {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -114,16 +119,22 @@
 
         <h2>Anotações de {{ paciente.get_full_name }}</h2>
 
-        <form method="get" class="mb-3">
-            <input type="text" name="q" class="form-control" placeholder="Pesquisar conteúdo..." value="{{ request.GET.q }}">
+        <form method="get" class="mb-3" onsubmit="return false;">
+            <input id="filtro-input" type="text" name="q" class="form-control" placeholder="Pesquisar conteúdo..." value="{{ request.GET.q }}">
         </form>
 
         {% if anotacao_geral %}
-            <h4 class="mt-4">📝 Anotação Geral</h4>
-            <p>{{ anotacao_geral.conteudo|linebreaks }}</p>
-            <a href="{% url 'editar_anotacao_geral' paciente.id %}" class="btn btn-primary btn-sm mt-2">Editar Anotação Geral</a>
+            <div id="anotacao-geral-card" class="mb-4">
+                <h4 class="mt-4">📝 Anotação Geral</h4>
+                <p id="anotacao-geral-texto">{{ anotacao_geral.conteudo|linebreaks }}</p>
+                <div id="anotacao-geral-conteudo" style="display:none;">{{ anotacao_geral.conteudo }}</div>
+
+                <a href="{% url 'editar_anotacao_geral' paciente.id %}" class="btn btn-primary btn-sm mt-2">Editar Anotação Geral</a>
+            </div>
         {% else %}
-            <a href="{% url 'editar_anotacao_geral' paciente.id %}" class="btn btn-primary btn-sm mt-2">Criar Anotação Geral</a>
+            <div id="anotacao-geral-card" class="mb-4">
+                <a href="{% url 'editar_anotacao_geral' paciente.id %}" class="btn btn-primary btn-sm mt-2">Criar Anotação Geral</a>
+            </div>
         {% endif %}
 
         <hr>
@@ -134,7 +145,7 @@
         </div>
 
         <div class="table-responsive mt-3">
-            <table class="table table-bordered table-striped align-middle">
+            <table id="anotacoes-table" class="table table-bordered table-striped align-middle">
                 <thead class="table-primary text-center">
                     <tr>
                         <th>Data da Consulta</th>
@@ -150,6 +161,8 @@
                             <td class="text-center">
                                 <a href="{% url 'editar_anotacao_consulta' anotacao.id %}" class="btn btn-primary btn-sm">Editar</a>
                             </td>
+
+                            <td class="conteudo-cell">{{ anotacao.conteudo }}</td>
                         </tr>
                     {% empty %}
                         <tr>
@@ -160,5 +173,58 @@
             </table>
         </div>
     </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const input = document.getElementById('filtro-input');
+        const rows = Array.from(document.querySelectorAll('#anotacoes-table tbody tr'));
+        const anotacaoCard = document.getElementById('anotacao-geral-card');
+        const anotacaoTextoVisivel = document.getElementById('anotacao-geral-texto');
+        const anotacaoConteudoOculto = document.getElementById('anotacao-geral-conteudo');
+
+        function normalizeText(str) {
+            if (!str) return '';
+            return str
+                .normalize ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : str
+                ;
+        }
+
+        function clean(str) {
+            return normalizeText(String(str || ''))
+                .toLowerCase()
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        if (!input) return;
+
+        input.addEventListener('input', function() {
+            const filtro = clean(input.value);
+
+            rows.forEach(row => {
+                const rowVisibleText = row.textContent || '';
+                const conteudoCell = row.querySelector('.conteudo-cell');
+                const conteudoText = conteudoCell ? (conteudoCell.textContent || '') : '';
+
+                const procura = clean(rowVisibleText + ' ' + conteudoText);
+
+                const matches = filtro === '' ? true : procura.includes(filtro);
+
+                row.style.display = matches ? '' : 'none';
+            });
+
+            if (anotacaoConteudoOculto && anotacaoCard) {
+                const geralText = clean( (anotacaoConteudoOculto.textContent || '') );
+                const mostraGeral = (filtro === '') || geralText.includes(filtro);
+                anotacaoCard.style.display = mostraGeral ? '' : 'none';
+            }
+        });
+
+        (function applyInitialFilter() {
+            const evt = new Event('input', { bubbles: true });
+            input.dispatchEvent(evt);
+        })();
+    });
+    </script>
 </body>
 </html>
