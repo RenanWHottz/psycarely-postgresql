@@ -8,5 +8,5 @@ tzdata==2025.2
 python-dotenv==1.2.1
 gunicorn==23.0.0
 whitenoise==6.11.0
-dj-database-url==1.4.0
+dj-database-url==3.0.1
 psycopg2-binary==2.9.12
