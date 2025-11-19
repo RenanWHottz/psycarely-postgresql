@@ -1,29 +1,186 @@
 <!--templates/pacientes/perfil_paciente.html-->
-<a href="{% url 'lista_pacientes' %}">← Voltar para lista</a>
-
-<h2>Perfil de {{ paciente.get_full_name }}</h2>
-
-<p><strong>CPF:</strong> {{ paciente.cpf }}</p>
-<p><strong>Email:</strong> {{ paciente.email }}</p>
-<p><strong>Telefone:</strong> {{ paciente.telefone }}</p>
-<p><strong>Data de nascimento:</strong> {{ paciente.data_nascimento|default:"Não informado" }}</p>
-<p><strong>Endereço:</strong> {{ paciente.endereco|default:"Não informado" }}</p>
-
-<h3>Anamnese</h3>
-{% if anamnese and anamnese.conteudo %}
-    <p>{{ anamnese.conteudo|linebreaks }}</p>
-{% else %}
-    <p>Ainda não preenchida.</p>
-{% endif %}
-<a href="{% url 'editar_anamnese' paciente.id %}" class="btn btn-primary mt-2">Editar Anamnese</a>
-
-<h3>Consultas</h3>
-<a href="{% url 'listar_consultas' paciente.id %}" class="btn btn-outline-success">Ver Consultas</a>
-
-<h3>Anotações</h3>
-<a href="{% url 'listar_anotacoes_paciente' paciente.id %}" class="btn btn-outline-primary">Anotações</a>
-
-<h3>Tarefas de Casa</h3>
-<a href="{% url 'listar_rpds_paciente' paciente.id %}" class="btn btn-primary mt-2">Listar RPD's realizados</a>
-<br>
-<a href="{% url 'listar_humores_paciente' paciente.id %}" class="btn btn-primary mt-2">Listar Registros de Humor realizados</a>
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil do Paciente</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('{% static "img/fundo_dashboard.jpg" %}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .container-perfil {
+            background-color: rgba(255,255,255,0.93);
+            padding: 2.5rem 2rem;
+            border-radius: 20px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.13);
+            max-width: 700px;
+            margin: 3rem auto;
+        }
+        .btn-voltar {
+            background-color: #0071bc;
+            color: white;
+            border: none;
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 0.5rem 1.2rem;
+            margin-bottom: 2rem;
+            transition: background-color 0.2s;
+            display: inline-block;
+        }
+        .btn-voltar:hover {
+            background-color: #005a99;
+        }
+        h2 {
+            color: #19588a;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .card-info {
+            background: #f7fbfd;
+            border-radius: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+            padding: 1.5rem 1.2rem;
+            margin-bottom: 2rem;
+        }
+        .card-info p {
+            margin-bottom: 0.7rem;
+            font-size: 1.08rem;
+        }
+        .section-title {
+            color: #19588a;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.18rem;
+        }
+        .anamnese-box {
+            background: #eaf6fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+        }
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            margin-bottom: 1.5rem;
+        }
+        .btn-custom {
+            background-color: #19588a;
+            color: #fff !important;
+            border: none;
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 0.5rem 1.2rem;
+            transition: background-color 0.2s;
+        }
+        .btn-custom:hover {
+            background-color: #0071bc;
+            color: #fff !important;
+        }
+        .btn-custom-success {
+            background-color: #28a745;
+            color: #fff !important;
+            border: none;
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 0.5rem 1.2rem;
+            transition: background-color 0.2s;
+        }
+        .btn-custom-success:hover {
+            background-color: #218838;
+            color: #fff !important;
+        }
+        .btn-custom-primary {
+            background-color: #0071bc;
+            color: #fff !important;
+            border: none;
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 0.5rem 1.2rem;
+            transition: background-color 0.2s;
+        }
+        .btn-custom-primary:hover {
+            background-color: #19588a;
+            color: #fff !important;
+        }
+        .anamnese-box {
+            background: #eaf6fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+        .anamnese-box::-webkit-scrollbar {
+            width: 8px;
+        }
+        .anamnese-box::-webkit-scrollbar-thumb {
+            background: #bcdff7;
+            border-radius: 8px;
+        }
+        @media (max-width: 600px) {
+            .container-perfil {
+                padding: 1.2rem 0.5rem;
+            }
+            .card-info {
+                padding: 1rem 0.5rem;
+            }
+            .btn-group {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .anamnese-box {
+                max-height: 160px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-perfil">
+        <a href="{% url 'lista_pacientes' %}" class="btn btn-voltar">← Voltar para lista</a>
+        <h2>Perfil de {{ paciente.get_full_name }}</h2>
+        <div class="card-info">
+            <p><strong>CPF:</strong> {{ paciente.cpf }}</p>
+            <p><strong>Email:</strong> {{ paciente.email }}</p>
+            <p><strong>Telefone:</strong> {{ paciente.telefone }}</p>
+            <p><strong>Data de nascimento:</strong> {{ paciente.data_nascimento|default:"Não informado" }}</p>
+            <p><strong>Endereço:</strong> {{ paciente.endereco|default:"Não informado" }}</p>
+        </div>
+        <div class="section-title">Anamnese</div>
+        <div class="anamnese-box">
+            {% if anamnese and anamnese.conteudo %}
+                {{ anamnese.conteudo|linebreaks }}
+            {% else %}
+                <span class="text-muted">Ainda não preenchida.</span>
+            {% endif %}
+        </div>
+        <div class="btn-group mb-3">
+            <a href="{% url 'editar_anamnese' paciente.id %}" class="btn btn-custom-primary">Editar Anamnese</a>
+        </div>
+        <div class="section-title">Consultas</div>
+        <div class="btn-group mb-3">
+            <a href="{% url 'listar_consultas' paciente.id %}" class="btn btn-custom-success">Ver Consultas</a>
+        </div>
+        <div class="section-title">Anotações</div>
+        <div class="btn-group mb-3">
+            <a href="{% url 'listar_anotacoes_paciente' paciente.id %}" class="btn btn-custom">Anotações</a>
+        </div>
+        <div class="section-title">Tarefas de Casa</div>
+        <div class="btn-group mb-3">
+            <a href="{% url 'listar_rpds_paciente' paciente.id %}" class="btn btn-custom-primary">Listar RPD's realizados</a>
+            <a href="{% url 'listar_humores_paciente' paciente.id %}" class="btn btn-custom-primary">Listar Registros de Humor realizados</a>
+        </div>
+    </div>
+</body>
+</html>

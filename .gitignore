@@ -22,6 +22,7 @@ staticfiles/
 
 # Configurações locais
 *.env
+PsyCarely/.env.render.backup
 *.local
 settings.py
 

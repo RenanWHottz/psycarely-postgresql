@@ -9,28 +9,48 @@
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
     
     <style>
+        body {
+            background-image: url('{% static "img/fundo_dashboard.jpg" %}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .container {
+            background-color: rgba(255,255,255,0.93);
+            padding: 2.5rem 2rem;
+            border-radius: 20px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.13);
+            max-width: 900px;
+            margin: 3rem auto;
+        }
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 8px;
         }
         .day {
-            background: white;
-            border: 1px solid #ddd;
+            background: #f7fbfd;
+            border: 1px solid #bcdff7;
             border-radius: 8px;
             min-height: 120px;
             padding: 6px;
+            transition: box-shadow 0.2s;
         }
         .day-header {
             font-weight: bold;
             text-align: center;
-            background: #f8f9fa;
-            border: 1px solid #ddd;
+            background: #19588a;
+            color: #fff;
+            border: 1px solid #bcdff7;
             border-radius: 6px;
             padding: 6px;
+            letter-spacing: 0.5px;
         }
         .today {
             border: 2px solid #007bff;
+            box-shadow: 0 0 0 2px #bcdff7;
         }
         .consulta {
             font-size: 0.9em;
@@ -38,6 +58,21 @@
         }
         .badge-rec {
             font-size: 0.7em;
+        }
+        .day:hover {
+            box-shadow: 0 2px 12px rgba(25,88,138,0.10);
+        }
+        @media (max-width: 900px) {
+            .container {
+                padding: 1.2rem 0.5rem;
+            }
+            .calendar {
+                gap: 4px;
+            }
+            .day {
+                min-height: 80px;
+                padding: 4px;
+            }
         }
     </style>
 </head>
