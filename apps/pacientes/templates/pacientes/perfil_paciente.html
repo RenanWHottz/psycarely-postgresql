@@ -181,6 +181,10 @@
             <a href="{% url 'listar_rpds_paciente' paciente.id %}" class="btn btn-custom-primary">Listar RPD's realizados</a>
             <a href="{% url 'listar_humores_paciente' paciente.id %}" class="btn btn-custom-primary">Listar Registros de Humor realizados</a>
         </div>
+        <div class="section-title">Notificações</div>
+        <div class="btn-group mb-3">
+            <a href="{% url 'gerenciar_notificacoes' paciente.id %}" class="btn btn-custom-success">Gerenciar Notificações</a>
+        </div>
     </div>
 </body>
 </html>

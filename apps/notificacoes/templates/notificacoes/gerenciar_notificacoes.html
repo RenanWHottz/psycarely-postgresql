@@ -1,0 +1,333 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciar Notificações</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('{% static "img/fundo_dashboard.jpg" %}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .container-notificacoes {
+            background-color: rgba(255,255,255,0.93);
+            padding: 2.5rem 2rem;
+            border-radius: 20px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.13);
+            max-width: 700px;
+            margin: 3rem auto;
+        }
+        h2 {
+            color: #19588a;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .card {
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+        .card-header {
+            background-color: #19588a;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-radius: 16px 16px 0 0;
+        }
+        .btn-add { background-color: #28a745; color: white; border-radius: 8px; }
+        .btn-edit { background-color: #0071bc; color: white; border-radius: 8px; }
+        .btn-delete { background-color: #dc3545; color: white; border-radius: 8px; }
+        .badge-limit { background: #ffc107; color: #19588a; font-size: 0.85em; }
+        .btn-voltar {
+        display: inline-block;
+        background-color: #19588a;
+        color: white !important;
+        padding: 8px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        transition: 0.2s;
+        }
+        .btn-voltar:hover {
+            background-color: #0f3c5f;
+            color: white !important;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-notificacoes">
+
+        <a href="{% url 'perfil_paciente' paciente.id %}" class="btn btn-voltar">← Voltar ao perfil</a>
+
+        <h2>Gerenciar Notificações de {{ paciente.get_full_name }}</h2>
+
+        <!-- ============================ -->
+        <!-- NOTIFICAÇÕES DE CONSULTA -->
+        <!-- ============================ -->
+        <div class="card">
+            <div class="card-header">Notificações de Consulta</div>
+            <div class="card-body">
+                <ul class="list-group mb-2">
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>24h antes da consulta</span>
+                        <form method="POST" action="{% url 'alternar_notificacao_consulta' paciente.id 'ativa_24h' %}">
+                            {% csrf_token %}
+                            <button class="btn btn-sm {% if notificacoes_consulta.ativa_24h %}btn-success{% else %}btn-danger{% endif %}">
+                                {% if notificacoes_consulta.ativa_24h %}Ativa{% else %}Inativa{% endif %}
+                            </button>
+                        </form>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>2h antes da consulta</span>
+                        <form method="POST" action="{% url 'alternar_notificacao_consulta' paciente.id 'ativa_2h' %}">
+                            {% csrf_token %}
+                            <button class="btn btn-sm {% if notificacoes_consulta.ativa_2h %}btn-success{% else %}btn-danger{% endif %}">
+                                {% if notificacoes_consulta.ativa_2h %}Ativa{% else %}Inativa{% endif %}
+                            </button>
+                        </form>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>30min antes da consulta</span>
+                        <form method="POST" action="{% url 'alternar_notificacao_consulta' paciente.id 'ativa_30min' %}">
+                            {% csrf_token %}
+                            <button class="btn btn-sm {% if notificacoes_consulta.ativa_30min %}btn-success{% else %}btn-danger{% endif %}">
+                                {% if notificacoes_consulta.ativa_30min %}Ativa{% else %}Inativa{% endif %}
+                            </button>
+                        </form>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+
+        <!-- ============================ -->
+        <!-- NOTIFICAÇÕES DE HUMOR -->
+        <!-- ============================ -->
+        <div class="card">
+            <div class="card-header">
+                Notificações de Registro de Humor
+                <span class="badge-limit">Máx. 2 por dia</span>
+            </div>
+
+            <div class="card-body">
+                <ul class="list-group mb-2">
+                    {% for h in notificacoes_humor %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>{{ h.horario }}</span>
+                        <div>
+
+                            <!-- Botão editar -->
+                            <button class="btn btn-edit btn-sm me-1"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalEditarHumor{{ h.id }}">
+                                Editar
+                            </button>
+
+                            <!-- Excluir -->
+                            <form action="{% url 'excluir_notificacao_humor' paciente.id h.id %}"
+                                  method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <button class="btn btn-delete btn-sm">Excluir</button>
+                            </form>
+                        </div>
+                    </li>
+
+                    <!-- Modal Edição Humor -->
+                    <div class="modal fade" id="modalEditarHumor{{ h.id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form method="POST" action="{% url 'editar_notificacao_humor' paciente.id h.id %}">
+                                    {% csrf_token %}
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Editar horário de humor</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <label class="form-label">Horário</label>
+                                        <input type="time" name="horario"
+                                               class="form-control"
+                                               value="{{ h.horario|time:'H:i' }}" required>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-success">Salvar</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% empty %}
+                    <li class="list-group-item text-muted">Nenhum horário cadastrado.</li>
+                    {% endfor %}
+                </ul>
+
+                <button class="btn btn-add"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalHumor"
+                        {% if notificacoes_humor|length >= 2 %}disabled{% endif %}>
+                    Adicionar horário
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal Criar Humor -->
+        <div class="modal fade" id="modalHumor" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method="POST" action="{% url 'criar_notificacao_humor' paciente.id %}">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h5 class="modal-title">Adicionar horário de humor</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <label class="form-label">Horário</label>
+                            <input type="time" name="horario" class="form-control" required>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Salvar</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================ -->
+        <!-- NOTIFICAÇÕES DE RPD -->
+        <!-- ============================ -->
+        <div class="card">
+            <div class="card-header">
+                Notificações de RPD
+                <span class="badge-limit">Máx. 2 por semana</span>
+            </div>
+
+            <div class="card-body">
+                <ul class="list-group mb-2">
+                    {% for n in notificacoes_rpd %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>{{ n.get_dia_semana_display }}, {{ n.horario }}</span>
+
+                        <div>
+                            <!-- Agora usa modal -->
+                            <button class="btn btn-edit btn-sm me-1"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalEditarRPD{{ n.id }}">
+                                Editar
+                            </button>
+
+                            <form action="{% url 'excluir_notificacao_rpd' paciente.id n.id %}"
+                                  method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <button class="btn btn-delete btn-sm">Excluir</button>
+                            </form>
+                        </div>
+                    </li>
+
+                    <!-- Modal Editar RPD -->
+                    <div class="modal fade" id="modalEditarRPD{{ n.id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form method="POST" action="{% url 'editar_notificacao_rpd' paciente.id n.id %}">
+                                    {% csrf_token %}
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Editar notificação RPD</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <label class="form-label">Dia da semana</label>
+                                        <select name="dia" class="form-control" required>
+                                            {% for value, label in dias_semana %}
+                                                <option value="{{ value }}" {% if value == n.dia_semana %}selected{% endif %}>
+                                                    {{ label }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+
+                                        <label class="form-label mt-3">Horário</label>
+                                        <input type="time"
+                                               name="horario"
+                                               class="form-control"
+                                               value="{{ n.horario|time:'H:i' }}"
+                                               required>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-success">Salvar</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% empty %}
+                    <li class="list-group-item text-muted">Nenhum registro cadastrado.</li>
+                    {% endfor %}
+                </ul>
+
+                <button class="btn btn-add"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalRPD"
+                        {% if notificacoes_rpd|length >= 2 %}disabled{% endif %}>
+                    Adicionar registro
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal Criar RPD -->
+        <div class="modal fade" id="modalRPD" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method="POST" action="{% url 'criar_notificacao_rpd' paciente.id %}">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h5 class="modal-title">Adicionar registro RPD</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <label class="form-label">Dia da semana</label>
+                            <select name="dia" class="form-control" required>
+                                <option value="" disabled selected>Selecione...</option>
+                                {% for value, label in dias_semana %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+
+                            <label class="form-label mt-3">Horário</label>
+                            <input type="time" name="horario" class="form-control" required>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Salvar</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
